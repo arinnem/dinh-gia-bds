@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schema Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Chosen Palette: Warm Neutrals */
+        /* Application Structure Plan: A dashboard-style single-page application. A sidebar on the left lists all database tables, acting as the primary navigation. Clicking a table name in the sidebar scrolls to and highlights the corresponding section in the main content area on the right. The main content area is a single, scrollable column displaying detailed information for each table, including its purpose, RLS policy, and a structured view of its fields. This structure was chosen because it mirrors the familiar layout of database management tools, making it highly intuitive for developers and data analysts to explore the schema. The user flow is simple: select a table, view its details. A summary chart at the top provides a high-level overview of the schema's composition (e.g., number of columns per table), offering an immediate quantitative insight. */
+        /* Visualization & Content Choices: 
+           - Schema Overview: Goal: Inform. Method: Bar Chart (Chart.js) showing column counts per table. Interaction: Hovering over a bar reveals the exact count. Justification: Provides a quick, visual comparison of table complexity.
+           - Table Details: Goal: Organize & Inform. Method: Structured HTML tables and definition lists styled with Tailwind CSS. Interaction: Clicking a table in the navigation scrolls to its detail view. Justification: This is the clearest and most standard way to present detailed technical specifications like field names, data types, and descriptions, making it easy for developers to read and reference.
+           - RLS Policies: Goal: Inform. Method: Styled text blocks with distinct backgrounds. Justification: Separates security rules visually from structural definitions, highlighting their importance.
+           - Relationships: Goal: Relationships. Method: Textual annotations (e.g., '-> users.id') within the table structure. Justification: Clearly indicates foreign key relationships without complex diagrams, fitting the clean, text-focused design and adhering to the no-SVG rule.
+        */
+        /* CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. */
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #F5F5F4; /* warm-neutral-200 */
+            color: #333;
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar {
+            background-color: #FFFFFF;
+        }
+        .sidebar a.active {
+            background-color: #E7E5E4; /* warm-neutral-300 */
+            color: #A855F7; /* purple-600 */
+            font-weight: 600;
+        }
+        .table-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E7E5E4;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .table-card:target {
+            box-shadow: 0 0 0 3px #A855F7; /* purple-600 */
+            transform: scale(1.01);
+        }
+        .rls-policy {
+            background-color: #FAF5FF; /* purple-50 */
+            border-left: 4px solid #A855F7; /* purple-600 */
+        }
+        .table-header-custom {
+            background-color: #FAFAFA; /* warm-neutral-100 */
+        }
+        .chart-container {
+            position: relative; 
+            width: 100%; 
+            max-width: 900px; 
+            margin-left: auto; 
+            margin-right: auto; 
+            height: 350px;
+            max-height: 40vh;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar w-72 flex-shrink-0 shadow-lg overflow-y-auto">
+            <div class="p-5">
+                <h1 class="text-2xl font-bold text-gray-800">Lược đồ CSDL</h1>
+                <p class="text-sm text-gray-500 mt-1">Nền tảng Bất động sản</p>
+            </div>
+            <nav class="mt-4 px-2" id="nav-menu">
+                <!-- Navigation links will be inserted here by JS -->
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <header class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Bảng điều khiển Khám phá Lược đồ</h2>
+                    <p class="mt-2 text-gray-600">Một giao diện tương tác để trực quan hóa cấu trúc, mối quan hệ và chính sách bảo mật của cơ sở dữ liệu. Nhấp vào một bảng ở thanh bên để xem chi tiết.</p>
+                </header>
+                
+                <!-- Overview Chart -->
+                <section class="mb-12 p-6 bg-white rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Tổng quan cấu trúc Schema</h3>
+                     <p class="text-gray-600 mb-4">Biểu đồ dưới đây thể hiện mức độ phức tạp của mỗi bảng dựa trên số lượng trường thông tin (cột). Các bảng có nhiều cột hơn thường chứa dữ liệu cốt lõi và phức tạp hơn.</p>
+                    <div class="chart-container">
+                        <canvas id="schemaOverviewChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Table details will be inserted here by JS -->
+                <div id="table-details-container"></div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const schemaData = [
+        {
+            id: 'users',
+            name: '1. users (Người dùng)',
+            rls: {
+                title: "Users can see and manage their own data.",
+                rules: [
+                    "`SELECT`, `UPDATE`, `DELETE`: Người dùng chỉ có thể thực hiện các hành động này trên hàng dữ liệu có `id` trùng với `user_id` hiện tại của phiên làm việc.",
+                    "`INSERT`: Người dùng mới có thể tạo tài khoản cho chính mình."
+                ],
+                purpose: "Đảm bảo người dùng không thể xem hay chỉnh sửa thông tin của người dùng khác, bảo vệ quyền riêng tư tuyệt đối."
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của người dùng, sử dụng định dạng UUID để tăng tính bảo mật.', notes: 'Tự động tạo khi có người dùng mới đăng ký.', relation: '-' },
+                { no: 2, name: 'email', type: 'VARCHAR(255), **UNIQUE**', desc: 'Địa chỉ email của người dùng, được sử dụng làm tên đăng nhập.', notes: 'Bắt buộc, không được trùng lặp trong toàn bộ hệ thống.', relation: '-' },
+                { no: 3, name: 'hashed_password', type: 'VARCHAR(255)', desc: 'Mật khẩu của người dùng sau khi đã được băm bằng một thuật toán mạnh (ví dụ: bcrypt).', notes: 'Bắt buộc. Không bao giờ lưu mật khẩu dạng văn bản thô.', relation: '-' },
+                { no: 4, name: 'full_name', type: 'VARCHAR(255)', desc: 'Họ và tên đầy đủ của người dùng.', notes: 'Không bắt buộc, người dùng có thể cập nhật sau.', relation: '-' },
+                { no: 5, name: 'role', type: 'VARCHAR(50)', desc: 'Vai trò của người dùng để phân quyền trong hệ thống.', notes: "Bắt buộc. Mặc định là 'Standard'. Có thể là 'Professional'.", relation: '-' },
+                { no: 6, name: 'created_at', type: 'TIMESTAMPTZ', desc: 'Dấu thời gian chính xác khi tài khoản được tạo, bao gồm cả múi giờ.', notes: 'Tự động điền giá trị `NOW()` khi tạo bản ghi.', relation: '-' },
+                { no: 7, name: 'updated_at', type: 'TIMESTAMPTZ', desc: 'Dấu thời gian chính xác khi thông tin tài khoản được cập nhật lần cuối.', notes: 'Tự động cập nhật mỗi khi có thay đổi trên bản ghi.', relation: '-' }
+            ]
+        },
+        {
+            id: 'projects',
+            name: '2. projects (Dự án Bất động sản)',
+            rls: {
+                title: 'Public read-only access for projects.',
+                rules: [
+                    '`SELECT`: Mọi người dùng, kể cả khách vãng lai, đều có thể xem thông tin của tất cả các dự án.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Bị cấm đối với người dùng cuối. Các hành động này chỉ được phép thực hiện bởi một vai trò dịch vụ (service role) có quyền quản trị.'
+                ],
+                purpose: 'Công khai hóa thông tin dự án nhưng đảm bảo tính toàn vẹn của dữ liệu, chỉ cho phép quản trị viên hoặc hệ thống tự động cập nhật.'
+            },
+            fields: [
+                 { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của dự án.', notes: 'Tự động tạo.', relation: '-' },
+                 { no: 2, name: 'name', type: 'TEXT, **UNIQUE**', desc: 'Tên thương mại đầy đủ và chính thức của dự án.', notes: 'Bắt buộc, không được trùng lặp.', relation: '-' },
+                 { no: 3, name: 'investor', type: 'TEXT', desc: 'Tên của chủ đầu tư dự án.', notes: 'Không bắt buộc.', relation: '-' },
+                 { no: 4, name: 'description', type: 'TEXT', desc: 'Đoạn văn mô tả tổng quan, giới thiệu về các điểm nổi bật của dự án.', notes: 'Không bắt buộc.', relation: '-' },
+                 { no: 5, name: 'address', type: 'TEXT', desc: 'Địa chỉ của dự án (ví dụ: số, tên đường, phường, quận).', notes: 'Không bắt buộc.', relation: '-' },
+                 { no: 6, name: 'scale', type: 'TEXT', desc: 'Quy mô tổng thể của dự án.', notes: 'Ví dụ: "Gồm 3 tòa tháp cao 40 tầng, tổng số 1500 căn hộ".', relation: '-' },
+                 { no: 7, name: 'status', type: 'VARCHAR(100)', desc: 'Tình trạng hiện tại của dự án.', notes: "Ví dụ: 'Đang triển khai', 'Đang mở bán', 'Đã bàn giao'.", relation: '-' },
+                 { no: 8, name: 'created_at', type: 'TIMESTAMPTZ', desc: 'Dấu thời gian khi bản ghi về dự án này được tạo trong hệ thống.', notes: 'Tự động điền.', relation: '-' }
+            ]
+        },
+        {
+            id: 'properties',
+            name: '3. properties (Bất động sản)',
+            rls: {
+                title: 'Public read-only access for properties.',
+                rules: [
+                    '`SELECT`: Mọi người dùng, kể cả khách vãng lai, đều có thể xem thông tin của tất cả các bất động sản.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Bị cấm đối với người dùng cuối. Các hành động này chỉ được phép thực hiện bởi vai trò dịch vụ của hệ thống (ví dụ: scraper).'
+                ],
+                purpose: 'Đảm bảo mọi người có thể tìm kiếm và xem dữ liệu, nhưng chỉ hệ thống mới có quyền thay đổi để duy trì tính toàn vẹn dữ liệu.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của bất động sản.', notes: 'Tự động tạo.', relation: '-' },
+                { no: 2, name: 'source_url', type: 'TEXT, **UNIQUE**', desc: 'URL gốc của tin đăng trên trang web nguồn.', notes: 'Bắt buộc, đảm bảo không thu thập trùng lặp một tin đăng.', relation: '-' },
+                { no: 3, name: 'source_site', type: 'VARCHAR(100)', desc: 'Tên miền của trang web nguồn.', notes: "Bắt buộc. Ví dụ: 'batdongsan.com.vn'.", relation: '-' },
+                { no: 4, name: 'title', type: 'TEXT', desc: 'Tiêu đề của tin đăng, được thu thập từ nguồn.', notes: 'Bắt buộc.', relation: '-' },
+                { no: 5, name: 'description', type: 'TEXT', desc: 'Nội dung mô tả chi tiết về bất động sản.', notes: 'Không bắt buộc.', relation: '-' },
+                { no: 6, name: 'price', type: 'DECIMAL(18, 2)', desc: 'Giá bán hiện tại của bất động sản, tính bằng VNĐ.', notes: 'Lưu dưới dạng số thập phân để đảm bảo độ chính xác.', relation: 'Liên kết tới bảng `price_history`.' },
+                { no: 7, name: 'area', type: 'REAL', desc: 'Diện tích của bất động sản, tính bằng mét vuông (m²).', notes: 'Lưu dưới dạng số thực.', relation: '-' },
+                { no: 8, name: 'bedrooms', type: 'SMALLINT', desc: 'Số lượng phòng ngủ.', notes: '', relation: '-' },
+                { no: 9, name: 'bathrooms', type: 'SMALLINT', desc: 'Số lượng phòng vệ sinh/phòng tắm.', notes: '', relation: '-' },
+                { no: 10, name: 'floors', type: 'SMALLINT', desc: 'Tổng số tầng của bất động sản.', notes: '', relation: '-' },
+                { no: 11, name: 'frontage', type: 'REAL', desc: 'Chiều rộng mặt tiền của bất động sản, tính bằng mét (m).', notes: '', relation: '-' },
+                { no: 12, name: 'full_address', type: 'TEXT', desc: 'Địa chỉ đầy đủ của bất động sản dưới dạng một chuỗi văn bản.', notes: '', relation: '-' },
+                { no: 13, name: 'location', type: 'GEOMETRY(Point, 4326)', desc: 'Tọa độ địa lý (kinh độ, vĩ độ) của bất động sản.', notes: '**Rất quan trọng.** Sử dụng tiện ích mở rộng PostGIS để truy vấn không gian.', relation: '-' },
+                { no: 14, name: 'additional_features', type: 'JSONB', desc: 'Lưu các thuộc tính khác, không cố định dưới dạng JSON.', notes: 'Rất linh hoạt. Ví dụ: `{"có_sân_vườn": true, "gần_trường_học": "Đại học Bách Khoa"}`.', relation: '-' },
+                { no: 15, name: 'avm_estimate', type: 'DECIMAL(18, 2)', desc: 'Giá trị ước tính từ mô hình AVM của hệ thống.', notes: 'Được cập nhật định kỳ bởi một tiến trình của backend.', relation: '-' },
+                { no: 16, name: 'published_at', type: 'TIMESTAMPTZ', desc: 'Ngày tin đăng được đăng tải gốc trên trang nguồn.', notes: '', relation: '-' },
+                { no: 17, name: 'last_scraped_at', type: 'TIMESTAMPTZ', desc: 'Lần cuối cùng scraper ghé thăm và cập nhật thông tin cho tin đăng này.', notes: 'Tự động cập nhật mỗi khi scraper chạy.', relation: '-' },
+                { no: 18, name: 'project_id', type: 'UUID, **FK**', desc: 'Khóa ngoại liên kết tới dự án mà bất động sản này thuộc về.', notes: 'Cho phép giá trị NULL nếu là nhà riêng lẻ, không thuộc dự án nào.', relation: '`properties.project_id` -> `projects.id`' },
+                { no: 19, name: 'property_type_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới loại hình bất động sản.', notes: 'Bắt buộc.', relation: '`properties.property_type_id` -> `property_types.id`' },
+                { no: 20, name: 'legal_status_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới tình trạng pháp lý.', notes: 'Không bắt buộc.', relation: '`properties.legal_status_id` -> `legal_statuses.id`' },
+                { no: 21, name: 'direction_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới hướng nhà/hướng ban công.', notes: 'Không bắt buộc.', relation: '`properties.direction_id` -> `directions.id`' },
+                { no: 22, name: 'ward_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới phường/xã.', notes: 'Không bắt buộc.', relation: '`properties.ward_id` -> `wards.id`' },
+                { no: 23, name: 'district_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới quận/huyện.', notes: 'Bắt buộc để lọc theo khu vực.', relation: '`properties.district_id` -> `districts.id`' }
+            ]
+        },
+        {
+            id: 'price_history',
+            name: '4. price_history (Lịch sử giá)',
+             rls: {
+                title: "Public read-only access for price history.",
+                rules: [
+                    "`SELECT`: Mọi người dùng đều có thể xem được lịch sử giá.",
+                    "`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò dịch vụ của hệ thống (scraper)."
+                ],
+                purpose: "Minh bạch hóa sự biến động giá của bất động sản cho người dùng, đồng thời bảo vệ dữ liệu lịch sử khỏi các thay đổi trái phép."
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của bản ghi lịch sử giá.', notes: 'Tự động tạo.', relation: '-' },
+                { no: 2, name: 'price', type: 'DECIMAL(18, 2)', desc: 'Mức giá của bất động sản tại thời điểm được ghi nhận.', notes: 'Bắt buộc.', relation: '-' },
+                { no: 3, name: 'changed_at', type: 'TIMESTAMPTZ', desc: 'Thời điểm chính xác scraper phát hiện có sự thay đổi về giá.', notes: 'Tự động điền.', relation: '-' },
+                { no: 4, name: 'property_id', type: 'UUID, **FK**', desc: 'Khóa ngoại liên kết tới bất động sản có sự thay đổi giá.', notes: 'Bắt buộc. `ON DELETE CASCADE` để xóa lịch sử nếu BĐS bị xóa.', relation: '`price_history.property_id` -> `properties.id`' }
+            ]
+        },
+        {
+            id: 'property_images',
+            name: '5. property_images (Hình ảnh Bất động sản)',
+             rls: {
+                title: "Public read-only access for images.",
+                rules: [
+                    "`SELECT`: Mọi người dùng đều có thể xem hình ảnh.",
+                    "`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò dịch vụ của hệ thống (scraper)."
+                ],
+                purpose: "Cho phép hiển thị hình ảnh công khai trên giao diện người dùng và bảo vệ nguồn dữ liệu."
+            },
+            fields: [
+                 { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của bản ghi hình ảnh.', notes: 'Tự động tạo.', relation: '-' },
+                 { no: 2, name: 'image_url', type: 'TEXT', desc: 'URL đầy đủ của tệp hình ảnh được lưu trữ.', notes: 'Bắt buộc.', relation: '-' },
+                 { no: 3, name: 'is_thumbnail', type: 'BOOLEAN', desc: 'Đánh dấu đây có phải là ảnh đại diện (thumbnail) cho tin đăng hay không.', notes: 'Mặc định là `FALSE`.', relation: '-' },
+                 { no: 4, name: 'property_id', type: 'UUID, **FK**', desc: 'Khóa ngoại liên kết tới bất động sản sở hữu hình ảnh này.', notes: 'Bắt buộc. `ON DELETE CASCADE`.', relation: '`property_images.property_id` -> `properties.id`' }
+            ]
+        },
+        {
+            id: 'valuations',
+            name: '6. valuations (Định giá thủ công)',
+            rls: {
+                title: 'Professionals can add valuations; all can view results.',
+                rules: [
+                    '`SELECT`: Mọi người dùng đều có thể xem các kết quả định giá đã được thực hiện để tham khảo.',
+                    '`INSERT`, `UPDATE`: Chỉ người dùng có vai trò \'Professional\' mới có thể tạo hoặc sửa định giá của chính họ.',
+                    '`DELETE`: Chỉ người dùng tạo ra định giá mới có quyền xóa nó.'
+                ],
+                purpose: 'Cho phép các chuyên gia đóng góp chuyên môn, đồng thời chia sẻ kết quả đó với cộng đồng nhưng vẫn đảm bảo chỉ tác giả mới có quyền thay đổi.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của một lần định giá.', notes: 'Tự động tạo.', relation: '-' },
+                { no: 2, name: 'value', type: 'DECIMAL(18, 2)', desc: 'Giá trị của bất động sản do người dùng chuyên nghiệp nhập vào.', notes: 'Bắt buộc.', relation: '-' },
+                { no: 3, name: 'avm_value_at_valuation', type: 'DECIMAL(18, 2)', desc: 'Giá trị AVM của BĐS tại thời điểm định giá.', notes: 'Dùng để so sánh, phân tích độ lệch giữa máy và người.', relation: '-' },
+                { no: 4, name: 'notes', type: 'TEXT', desc: 'Ghi chú, lý giải, hoặc bình luận chi tiết của thẩm định viên về mức giá họ đưa ra.', notes: 'Không bắt buộc.', relation: '-' },
+                { no: 5, name: 'created_at', type: 'TIMESTAMPTZ', desc: 'Thời điểm chính xác lần định giá này được thực hiện.', notes: 'Tự động điền.', relation: '-' },
+                { no: 6, name: 'property_id', type: 'UUID, **FK**', desc: 'Khóa ngoại liên kết tới bất động sản được định giá.', notes: 'Bắt buộc. `ON DELETE CASCADE`.', relation: '`valuations.property_id` -> `properties.id`' },
+                { no: 7, name: 'user_id', type: 'UUID, **FK**', desc: 'Khóa ngoại liên kết tới người dùng (vai trò \'Professional\') đã thực hiện định giá.', notes: 'Bắt buộc.', relation: '`valuations.user_id` -> `users.id`' }
+            ]
+        },
+        {
+            id: 'user_favorites',
+            name: '7. user_favorites (Bất động sản yêu thích)',
+            rls: {
+                title: 'Users can only manage their own list of favorites.',
+                rules: [
+                    '`SELECT`, `INSERT`, `DELETE`: Người dùng chỉ có thể thực hiện các hành động này trên các hàng có `user_id` trùng với `user_id` hiện tại của phiên làm việc.'
+                ],
+                purpose: 'Đảm bảo danh sách yêu thích của mỗi người dùng là riêng tư.'
+            },
+            fields: [
+                { no: 1, name: 'user_id', type: 'UUID, **PK, FK**', desc: 'Khóa ngoại liên kết tới người dùng đã bấm yêu thích.', notes: 'Là một phần của khóa chính kết hợp.', relation: '`user_favorites.user_id` -> `users.id`' },
+                { no: 2, name: 'property_id', type: 'UUID, **PK, FK**', desc: 'Khóa ngoại liên kết tới bất động sản được yêu thích.', notes: 'Là một phần của khóa chính kết hợp.', relation: '`user_favorites.property_id` -> `properties.id`' },
+                { no: 3, name: 'created_at', type: 'TIMESTAMPTZ', desc: 'Thời điểm chính xác người dùng bấm nút yêu thích.', notes: 'Tự động điền.', relation: '-' }
+            ]
+        },
+        {
+            id: 'ml_models',
+            name: '8. ml_models (Quản lý Mô hình Machine Learning)',
+            rls: {
+                title: 'Read-only for services, restricted writes for admins.',
+                rules: [
+                    '`SELECT`: Dịch vụ backend có thể đọc tất cả các phiên bản để chọn mô hình đang hoạt động (`is_active = TRUE`).',
+                    '`INSERT`, `UPDATE`, `DELETE`: Bị cấm đối với người dùng cuối và các dịch vụ thông thường. Chỉ cho phép thực hiện bởi một vai trò đặc biệt, ví dụ \'ml_admin\'.'
+                ],
+                purpose: 'Bảo vệ tài sản trí tuệ và sự ổn định của hệ thống định giá, đảm bảo chỉ những người có chuyên môn mới có thể thay đổi các phiên bản mô hình.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của một phiên bản mô hình.', notes: 'Tự động tạo.', relation: '-' },
+                { no: 2, name: 'version', type: 'VARCHAR(50), **UNIQUE**', desc: 'Tên phiên bản của mô hình theo chuẩn semantic versioning (ví dụ: \'1.0.0\', \'1.1.0-beta\').', notes: 'Bắt buộc.', relation: '-' },
+                { no: 3, name: 'model_file_path', type: 'TEXT', desc: 'Đường dẫn tới tệp mô hình đã được huấn luyện và lưu trữ (ví dụ: trên S3, GCS).', notes: 'Bắt buộc. Ví dụ: \'s3://my-models-bucket/avm-v1.1.0.pkl\'.', relation: '-' },
+                { no: 4, name: 'performance_metrics', type: 'JSONB', desc: 'Các chỉ số đo lường hiệu suất của mô hình sau khi huấn luyện.', notes: 'Lưu dưới dạng JSON. Ví dụ: `{"mae": 500000000, "mape": 0.08, "r2_score": 0.85}`.', relation: '' },
+                { no: 5, name: 'is_active', type: 'BOOLEAN', desc: 'Đánh dấu đây có phải là phiên bản đang được sử dụng chính thức trên hệ thống hay không.', notes: 'Bắt buộc. Chỉ nên có một phiên bản có giá trị `TRUE`.', relation: '-' },
+                { no: 6, name: 'training_notes', type: 'TEXT', desc: 'Ghi chú chi tiết về quá trình huấn luyện mô hình này.', notes: 'Ví dụ: "Sử dụng dữ liệu từ Q1/2025, loại bỏ các BĐS > 100 tỷ, áp dụng feature engineering mới".', relation: '-' },
+                { no: 7, name: 'created_at', type: 'TIMESTAMPTZ', desc: 'Thời gian mô hình được huấn luyện xong và lưu vào hệ thống.', notes: 'Tự động điền.', relation: '-' }
+            ]
+        },
+        {
+            id: 'estimation_logs',
+            name: '9. estimation_logs (Nhật ký Ước tính giá)',
+            rls: {
+                title: 'Users can only view their own estimation history.',
+                rules: [
+                    '`SELECT`: Người dùng chỉ có thể xem các hàng có `user_id` trùng với `user_id` hiện tại của phiên làm việc.',
+                    '`INSERT`: Chỉ được phép thực hiện bởi vai trò dịch vụ của backend khi có yêu cầu từ người dùng.',
+                    '`UPDATE`, `DELETE`: Bị cấm để đảm bảo tính toàn vẹn của nhật ký.'
+                ],
+                purpose: 'Cho phép người dùng xem lại lịch sử của mình mà không để lộ thông tin cho người khác, đồng thời thu thập dữ liệu quý giá cho việc phân tích.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'UUID, **PK**', desc: 'Khóa chính duy nhất của một lần yêu cầu ước tính.', notes: 'Tự động tạo.', relation: '-' },
+                { no: 2, name: 'input_features', type: 'JSONB', desc: 'Dữ liệu đầu vào chính xác mà người dùng đã cung cấp để ước tính.', notes: 'Bắt buộc. Lưu dưới dạng JSON. Ví dụ: `{"area": 55, "latitude": 21.02, "longitude": 105.8, "bedrooms": 3}`.', relation: '-' },
+                { no: 3, name: 'estimated_price', type: 'DECIMAL(18, 2)', desc: 'Giá trị mà mô hình đã trả về cho người dùng.', notes: 'Bắt buộc.', relation: '-' },
+                { no: 4, name: 'created_at', type: 'TIMESTAMPTZ', desc: 'Thời điểm chính xác yêu cầu ước tính được thực hiện.', notes: 'Tự động điền.', relation: '-' },
+                { no: 5, name: 'model_id', type: 'UUID, **FK**', desc: 'Khóa ngoại tới phiên bản mô hình đã được dùng để đưa ra ước tính này.', notes: 'Bắt buộc.', relation: '`estimation_logs.model_id` -> `ml_models.id`' },
+                { no: 6, name: 'user_id', type: 'UUID, **FK**', desc: 'Khóa ngoại tới người dùng đã thực hiện ước tính.', notes: 'Cho phép giá trị NULL nếu là người dùng vãng lai chưa đăng nhập.', relation: '`estimation_logs.user_id` -> `users.id`' }
+            ]
+        },
+        {
+            id: 'property_types',
+            name: '10. property_types (Loại hình Bất động sản)',
+            rls: {
+                title: 'Public read-only access for lookup data.',
+                rules: [
+                    '`SELECT`: Mọi người dùng đều có thể đọc.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò quản trị viên CSDL.'
+                ],
+                purpose: 'Cung cấp dữ liệu cho các bộ lọc trên giao diện và đảm bảo tính nhất quán.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'SERIAL, **PK**', desc: 'Khóa chính tự tăng.', notes: '', relation: '' },
+                { no: 2, name: 'name', type: 'VARCHAR(100), **UNIQUE**', desc: 'Tên loại hình bất động sản.', notes: "Ví dụ: 'Căn hộ chung cư', 'Nhà riêng', 'Biệt thự', 'Shophouse', 'Đất nền', 'Nhà dự án', 'Nhà tập thể', 'Officetel'.", relation: '' }
+            ]
+        },
+        {
+            id: 'legal_statuses',
+            name: '11. legal_statuses (Tình trạng pháp lý)',
+            rls: {
+                title: 'Public read-only access for lookup data.',
+                rules: [
+                    '`SELECT`: Mọi người dùng đều có thể đọc.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò quản trị viên CSDL.'
+                ],
+                purpose: 'Cung cấp dữ liệu cho các bộ lọc trên giao diện và đảm bảo tính nhất quán.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'SERIAL, **PK**', desc: 'Khóa chính tự tăng.', notes: '', relation: '' },
+                { no: 2, name: 'name', type: 'VARCHAR(255), **UNIQUE**', desc: 'Tên của tình trạng pháp lý.', notes: "Ví dụ: 'Sổ đỏ/Sổ hồng', 'Hợp đồng mua bán', 'Hợp đồng cọc với CĐT', 'Giấy phép xây dựng', 'Đang chờ sổ', 'Vi bằng', 'Giấy tờ tay', 'Đất nông nghiệp', 'Đất thổ cư (chưa sổ)'.", relation: '' }
+            ]
+        },
+        {
+            id: 'directions',
+            name: '12. directions (Hướng)',
+            rls: {
+                title: 'Public read-only access for lookup data.',
+                rules: [
+                    '`SELECT`: Mọi người dùng đều có thể đọc.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò quản trị viên CSDL.'
+                ],
+                purpose: 'Cung cấp dữ liệu cho các bộ lọc trên giao diện và đảm bảo tính nhất quán.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'SERIAL, **PK**', desc: 'Khóa chính tự tăng.', notes: '', relation: '' },
+                { no: 2, name: 'name', type: 'VARCHAR(50), **UNIQUE**', desc: 'Tên của hướng nhà/đất/ban công.', notes: "Ví dụ: 'Đông', 'Tây', 'Nam', 'Bắc', 'Đông-Bắc', 'Tây-Bắc', 'Đông-Nam', 'Tây-Nam'.", relation: '' }
+            ]
+        },
+        {
+            id: 'districts',
+            name: '13. districts (Quận/Huyện)',
+            rls: {
+                title: 'Public read-only access for lookup data.',
+                rules: [
+                    '`SELECT`: Mọi người dùng đều có thể đọc.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò quản trị viên CSDL.'
+                ],
+                purpose: 'Cung cấp dữ liệu cho các bộ lọc trên giao diện và đảm bảo tính nhất quán.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'SERIAL, **PK**', desc: 'Khóa chính tự tăng.', notes: '', relation: '' },
+                { no: 2, name: 'name', type: 'VARCHAR(100), **UNIQUE**', desc: 'Tên chính thức của Quận hoặc Huyện.', notes: '', relation: '' },
+                { no: 3, name: 'province', type: 'VARCHAR(100)', desc: 'Tên Tỉnh hoặc Thành phố trực thuộc trung ương.', notes: '', relation: '' }
+            ]
+        },
+        {
+            id: 'wards',
+            name: '14. wards (Phường/Xã)',
+            rls: {
+                title: 'Public read-only access for lookup data.',
+                rules: [
+                    '`SELECT`: Mọi người dùng đều có thể đọc.',
+                    '`INSERT`, `UPDATE`, `DELETE`: Chỉ được phép thực hiện bởi vai trò quản trị viên CSDL.'
+                ],
+                purpose: 'Cung cấp dữ liệu cho các bộ lọc trên giao diện và đảm bảo tính nhất quán.'
+            },
+            fields: [
+                { no: 1, name: 'id', type: 'SERIAL, **PK**', desc: 'Khóa chính tự tăng.', notes: '', relation: '-' },
+                { no: 2, name: 'name', type: 'VARCHAR(100)', desc: 'Tên chính thức của Phường hoặc Xã.', notes: '', relation: '-' },
+                { no: 3, name: 'district_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới Quận/Huyện mà Phường/Xã này thuộc về.', notes: 'Bắt buộc.', relation: '`wards.district_id` -> `districts.id`' }
+            ]
+        }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const navMenu = document.getElementById('nav-menu');
+        const detailsContainer = document.getElementById('table-details-container');
+
+        schemaData.forEach(table => {
+            // Create nav link
+            const navLink = document.createElement('a');
+            navLink.href = `#${table.id}`;
+            navLink.className = 'block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100 transition-colors';
+            navLink.textContent = table.name;
+            navMenu.appendChild(navLink);
+
+            // Create table detail card
+            const card = document.createElement('div');
+            card.id = table.id;
+            card.className = 'table-card rounded-xl shadow-md p-6 mb-8 scroll-mt-24';
+            
+            let rlsHtml = `
+                <div class="rls-policy p-4 rounded-lg mb-6">
+                    <h4 class="font-bold text-md text-purple-800">Chính sách Bảo mật Hàng (RLS)</h4>
+                    <p class="text-sm font-semibold text-purple-700 mt-2">${table.rls.title}</p>
+                    <div class="mt-2 text-sm text-purple-700 space-y-1">
+                        <p class="font-semibold">Quy tắc:</p>
+                        <ul class="list-disc list-inside ml-2">
+                            ${table.rls.rules.map(rule => `<li>${rule.replace(/`([^`]+)`/g, '<code class="bg-purple-200 text-purple-800 text-xs px-1 py-0.5 rounded">$1</code>')}</li>`).join('')}
+                        </ul>
+                        <p class="mt-2"><span class="font-semibold">Mục đích:</span> ${table.rls.purpose}</p>
+                    </div>
+                </div>`;
+
+            let fieldsHtml = `
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs text-gray-700 uppercase table-header-custom">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 w-12">STT</th>
+                                <th scope="col" class="px-4 py-3">Trường thông tin (Field)</th>
+                                <th scope="col" class="px-4 py-3">Kiểu dữ liệu & Khóa</th>
+                                <th scope="col" class="px-4 py-3">Diễn giải</th>
+                                <th scope="col" class="px-4 py-3">Ghi chú</th>
+                                <th scope="col" class="px-4 py-3">Mối quan hệ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${table.fields.map(field => `
+                                <tr class="border-b">
+                                    <td class="px-4 py-3 font-medium text-gray-900">${field.no}</td>
+                                    <td class="px-4 py-3 font-mono text-purple-700 font-semibold">${field.name}</td>
+                                    <td class="px-4 py-3 font-mono">${field.type.replace(/\*\*(.*?)\*\*/g, '<strong class="text-red-600">$1</strong>')}</td>
+                                    <td class="px-4 py-3">${field.desc}</td>
+                                    <td class="px-4 py-3">${field.notes.replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-sm px-1 py-0.5 rounded">$1</code>')}</td>
+                                    <td class="px-4 py-3 font-mono text-blue-600">${field.relation.replace(/`([^`]+)`/g, '<code class="bg-blue-100 text-sm px-1 py-0.5 rounded">$1</code>')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+
+            card.innerHTML = `
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">${table.name}</h3>
+                <hr class="mb-6">
+                ${rlsHtml}
+                ${fieldsHtml}
+            `;
+            detailsContainer.appendChild(card);
+        });
+
+        // Chart.js implementation
+        const ctx = document.getElementById('schemaOverviewChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: schemaData.map(t => t.name.replace(/^\d+\.\s/, '')),
+                datasets: [{
+                    label: 'Số lượng cột',
+                    data: schemaData.map(t => t.fields.length),
+                    backgroundColor: 'rgba(168, 85, 247, 0.6)', // purple-500 with opacity
+                    borderColor: 'rgba(168, 85, 247, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Số lượng cột'
+                        }
+                    },
+                    x: {
+                         ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + ' cột';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Active link highlighting on scroll
+        const sections = schemaData.map(table => document.getElementById(table.id));
+        const navLinks = document.querySelectorAll('#nav-menu a');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                    });
+                }
+            });
+        }, { rootMargin: "-50% 0px -50% 0px" });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+    });
+    </script>
+</body>
+</html>
