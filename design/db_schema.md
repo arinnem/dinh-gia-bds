@@ -1,3 +1,65 @@
+# Thiết kế Cơ sở dữ liệu: Nền tảng Phân tích Bất động sản
+
+## Mục lục
+
+### 1. [Bảng `users` (Người dùng)](#1-bảng-users-người-dùng)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ)
+
+### 2. [Bảng `projects` (Dự án Bất động sản)](#2-bảng-projects-dự-án-bất-động-sản)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-1)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-1)
+
+### 3. [Bảng `properties` (Bất động sản)](#3-bảng-properties-bất-động-sản)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-2)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-2)
+
+### 4. [Bảng `price_history` (Lịch sử giá)](#4-bảng-price_history-lịch-sử-giá)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-3)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-3)
+
+### 5. [Bảng `property_images` (Hình ảnh Bất động sản)](#5-bảng-property_images-hình-ảnh-bất-động-sản)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-4)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-4)
+
+### 6. [Bảng `valuations` (Định giá thủ công)](#6-bảng-valuations-định-giá-thủ-công)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-5)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-5)
+
+### 7. [Bảng `user_favorites` (Bất động sản yêu thích)](#7-bảng-user_favorites-bất-động-sản-yêu-thích)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-6)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-6)
+
+### 8. [Bảng `ml_models` (Quản lý Mô hình Machine Learning)](#8-bảng-ml_models-quản-lý-mô-hình-machine-learning)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-7)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-7)
+
+### 9. [Bảng `estimation_logs` (Nhật ký Ước tính giá)](#9-bảng-estimation_logs-nhật-ký-ước-tính-giá)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-8)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-8)
+
+### 10. [Bảng `property_types` (Loại hình Bất động sản)](#10-bảng-property_types-loại-hình-bất-động-sản)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-9)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-9)
+
+### 11. [Bảng `legal_statuses` (Tình trạng pháp lý)](#11-bảng-legal_statuses-tình-trạng-pháp-lý)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-10)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-10)
+
+### 12. [Bảng `directions` (Hướng)](#12-bảng-directions-hướng)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-11)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-11)
+
+### 13. [Bảng `districts` (Quận/Huyện)](#13-bảng-districts-quậnhuyện)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-12)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-12)
+
+### 14. [Bảng `wards` (Phường/Xã)](#14-bảng-wards-phườngxã)
+- [Chính sách Bảo mật Hàng (Row-Level Security - RLS)](#chính-sách-bảo-mật-hàng-row-level-security---rls-13)
+- [Cấu trúc bảng và mối quan hệ](#cấu-trúc-bảng-và-mối-quan-hệ-13)
+
+---
+
 ## 1. Bảng `users` (Người dùng)
 
 > **Chính sách Bảo mật Hàng (Row-Level Security - RLS):**
