@@ -6,126 +6,123 @@
 
 ## Mục lục
 
-### 1. [Giới thiệu](#1-giới-thiệu)
-- [1.1. Tổng quan Hệ thống](#11-tổng-quan-hệ-thống)
-- [1.2. Đối tượng Người dùng Chính](#12-đối-tượng-người-dùng-chính)
-- [1.3. Giá trị Cốt lõi](#13-giá-trị-cốt-lõi)
+1. [Giới thiệu](#1-giới-thiệu)
+   1.1. [Tổng quan Hệ thống](#11-tổng-quan-hệ-thống)  
+   1.2. [Đối tượng Người dùng Chính](#12-đối-tượng-người-dùng-chính)  
+   1.3. [Giá trị Cốt lõi](#13-giá-trị-cốt-lõi)  
 
-### 2. [Mục tiêu và Tầm nhìn](#2-mục-tiêu-và-tầm-nhìn)
-- [2.1. Mục tiêu theo Nhóm Người dùng](#21-mục-tiêu-theo-nhóm-người-dùng)
-  - [2.1.1. Chuyên viên Ngân hàng (Banking Professionals)](#211-chuyên-viên-ngân-hàng-banking-professionals)
-  - [2.1.2. Người tìm kiếm BĐS (Property Seekers)](#212-người-tìm-kiếm-bđs-property-seekers)
-  - [2.1.3. Nhà phân tích Xu hướng (Trend Analysts)](#213-nhà-phân-tích-xu-hướng-trend-analysts)
-  - [2.1.4. Môi giới & Chuyên gia BĐS](#214-môi-giới--chuyên-gia-bđs)
-- [2.2. Mục tiêu Kinh doanh](#22-mục-tiêu-kinh-doanh)
-  - [2.2.1. Mục tiêu Ngắn hạn (6-12 tháng)](#221-mục-tiêu-ngắn-hạn-6-12-tháng)
-  - [2.2.2. Mục tiêu Trung hạn (1-2 năm)](#222-mục-tiêu-trung-hạn-1-2-năm)
-  - [2.2.3. Mục tiêu Dài hạn (3-5 năm)](#223-mục-tiêu-dài-hạn-3-5-năm)
-- [2.3. Mục tiêu Sản phẩm](#23-mục-tiêu-sản-phẩm)
-  - [2.3.1. Tính năng Cốt lõi](#231-tính-năng-cốt-lõi)
-  - [2.3.2. Tính năng Nâng cao](#232-tính-năng-nâng-cao)
-  - [2.3.3. Tính năng Tương lai](#233-tính-năng-tương-lai)
+2. [Mục tiêu và Tầm nhìn](#2-mục-tiêu-và-tầm-nhìn)
+   2.1. [Mục tiêu theo Nhóm Người dùng](#21-mục-tiêu-theo-nhóm-người-dùng)  
+       2.1.1. [Chuyên viên Ngân hàng (Banking Professionals)](#211-chuyên-viên-ngân-hàng-banking-professionals)  
+       2.1.2. [Người tìm kiếm BĐS (Property Seekers)](#212-người-tìm-kiếm-bđs-property-seekers)  
+       2.1.3. [Nhà phân tích Xu hướng (Trend Analysts)](#213-nhà-phân-tích-xu-hướng-trend-analysts)  
+       2.1.4. [Môi giới & Chuyên gia BĐS](#214-môi-giới--chuyên-gia-bđs)  
+   2.2. [Mục tiêu Kinh doanh](#22-mục-tiêu-kinh-doanh)  
+       2.2.1. [Mục tiêu Ngắn hạn (6-12 tháng)](#221-mục-tiêu-ngắn-hạn-6-12-tháng)  
+       2.2.2. [Mục tiêu Trung hạn (1-2 năm)](#222-mục-tiêu-trung-hạn-1-2-năm)  
+       2.2.3. [Mục tiêu Dài hạn (3-5 năm)](#223-mục-tiêu-dài-hạn-3-5-năm)  
+   2.3. [Mục tiêu Sản phẩm](#23-mục-tiêu-sản-phẩm)  
+       2.3.1. [Tính năng Cốt lõi](#231-tính-năng-cốt-lõi)  
+       2.3.2. [Tính năng Nâng cao](#232-tính-năng-nâng-cao)  
+       2.3.3. [Tính năng Tương lai](#233-tính-năng-tương-lai)  
 
-### 3. [Phân tích Người dùng (User Personas)](#3-phân-tích-người-dùng-user-personas)
-- [3.1. Tổng quan về Người dùng](#31-tổng-quan-về-người-dùng)
-- [3.2. Người dùng Chính (Primary Personas)](#32-người-dùng-chính-primary-personas)
-  - [3.2.1. Chuyên viên Ngân hàng (Banking Professionals)](#321-chuyên-viên-ngân-hàng-banking-professionals)
-  - [3.2.2. Người tìm kiếm Bất động sản (Property Seekers)](#322-người-tìm-kiếm-bất-động-sản-property-seekers)
-  - [3.2.3. Nhà phân tích Xu hướng (Trend Analysts)](#323-nhà-phân-tích-xu-hướng-trend-analysts)
-- [3.3. Người dùng Phụ (Secondary Personas)](#33-người-dùng-phụ-secondary-personas)
-  - [3.3.1. Chủ sở hữu BĐS (Property Owners)](#331-chủ-sở-hữu-bđs-property-owners)
-  - [3.3.2. Môi giới BĐS (Real Estate Agents)](#332-môi-giới-bđs-real-estate-agents)
-  - [3.3.3. Nhà phát triển Dự án (Property Developers)](#333-nhà-phát-triển-dự-án-property-developers)
-  - [3.3.4. Nhà nghiên cứu & Học giả (Researchers & Academics)](#334-nhà-nghiên-cứu--học-giả-researchers--academics)
-  - [3.3.5. Nhà báo & Truyền thông (Journalists & Media)](#335-nhà-báo--truyền-thông-journalists--media)
-- [3.4. Phân tích Hành vi Người dùng](#34-phân-tích-hành-vi-người-dùng)
-  - [3.4.1. Tần suất Sử dụng](#341-tần-suất-sử-dụng)
-  - [3.4.2. Thời gian Sử dụng](#342-thời-gian-sử-dụng)
-  - [3.4.3. Thiết bị Sử dụng](#343-thiết-bị-sử-dụng)
-- [3.5. Yêu cầu Tính năng theo Persona](#35-yêu-cầu-tính-năng-theo-persona)
-- [3.6. Chiến lược Phát triển Tính năng](#36-chiến-lược-phát-triển-tính-năng)
+3. [Phân tích Người dùng (User Personas)](#3-phân-tích-người-dùng-user-personas)
+   3.1. [Tổng quan về Người dùng](#31-tổng-quan-về-người-dùng)  
+   3.2. [Người dùng Chính (Primary Personas)](#32-người-dùng-chính-primary-personas)  
+       3.2.1. [Chuyên viên Ngân hàng (Banking Professionals)](#321-chuyên-viên-ngân-hàng-banking-professionals)  
+       3.2.2. [Người tìm kiếm Bất động sản (Property Seekers)](#322-người-tìm-kiếm-bất-động-sản-property-seekers)  
+       3.2.3. [Nhà phân tích Xu hướng (Trend Analysts)](#323-nhà-phân-tích-xu-hướng-trend-analysts)  
+   3.3. [Người dùng Phụ (Secondary Personas)](#33-người-dùng-phụ-secondary-personas)  
+       3.3.1. [Chủ sở hữu BĐS (Property Owners)](#331-chủ-sở-hữu-bđs-property-owners)  
+       3.3.2. [Môi giới BĐS (Real Estate Agents)](#332-môi-giới-bđs-real-estate-agents)  
+       3.3.3. [Nhà phát triển Dự án (Property Developers)](#333-nhà-phát-triển-dự-án-property-developers)  
+       3.3.4. [Nhà nghiên cứu & Học giả (Researchers & Academics)](#334-nhà-nghiên-cứu--học-giả-researchers--academics)  
+       3.3.5. [Nhà báo & Truyền thông (Journalists & Media)](#335-nhà-báo--truyền-thông-journalists--media)  
+   3.4. [Phân tích Hành vi Người dùng](#34-phân-tích-hành-vi-người-dùng)  
+       3.4.1. [Tần suất Sử dụng](#341-tần-suất-sử-dụng)  
+       3.4.2. [Thời gian Sử dụng](#342-thời-gian-sử-dụng)  
+       3.4.3. [Thiết bị Sử dụng](#343-thiết-bị-sử-dụng)  
+   3.5. [Yêu cầu Tính năng theo Persona](#35-yêu-cầu-tính-năng-theo-persona)  
+   3.6. [Chiến lược Phát triển Tính năng](#36-chiến-lược-phát-triển-tính-năng)  
 
-### 4. [Tính năng Hệ thống (System Features)](#4-tính-năng-hệ-thống-system-features)
-- [4.1. Tổng quan Tính năng](#41-tổng-quan-tính-năng)
-- [4.2. Tính năng Cốt lõi (Core Features)](#42-tính-năng-cốt-lõi-core-features)
-  - [4.2.1. Thu thập và Quản lý Dữ liệu](#421-thu-thập-và-quản-lý-dữ-liệu)
-  - [4.2.2. Tìm kiếm và Lọc](#422-tìm-kiếm-và-lọc)
-  - [4.2.3. Hiển thị và So sánh](#423-hiển-thị-và-so-sánh)
-  - [4.2.4. Upload và Phân tích BĐS](#424-upload-và-phân-tích-bđs)
-  - [4.2.5. Chi tiết Tính năng Upload và Phân tích](#425-chi-tiết-tính-năng-upload-và-phân-tích)
-- [4.3. Tính năng Định giá (Valuation Features)](#43-tính-năng-định-giá-valuation-features)
-  - [4.3.1. AVM (Automated Valuation Model)](#431-avm-automated-valuation-model)
-  - [4.3.2. Manual Valuation](#432-manual-valuation)
-- [4.4. Tính năng Phân tích (Analytics Features)](#44-tính-năng-phân-tích-analytics-features)
-  - [4.4.1. Market Analytics](#441-market-analytics)
-  - [4.4.2. Statistical Reports](#442-statistical-reports)
-- [4.5. Tính năng Người dùng (User Features)](#45-tính-năng-người-dùng-user-features)
-  - [4.5.1. Authentication & Authorization](#451-authentication--authorization)
-  - [4.5.2. User Management](#452-user-management)
-- [4.6. Tính năng Xuất báo cáo (Export Features)](#46-tính-năng-xuất-báo-cáo-export-features)
-  - [4.6.1. Report Generation](#461-report-generation)
-  - [4.6.2. Data Export](#462-data-export)
-- [4.7. Tính năng Nâng cao (Advanced Features)](#47-tính-năng-nâng-cao-advanced-features)
-  - [4.7.1. AI & Machine Learning](#471-ai--machine-learning)
-  - [4.7.2. Integration & API](#472-integration--api)
-- [4.8. Tính năng Mobile (Mobile Features)](#48-tính-năng-mobile-mobile-features)
-  - [4.8.1. Mobile App](#481-mobile-app)
-- [4.9. Tính năng Bảo mật (Security Features)](#49-tính-năng-bảo-mật-security-features)
-  - [4.9.1. Data Protection](#491-data-protection)
-- [4.10. Tính năng Hiệu suất (Performance Features)](#410-tính-năng-hiệu-suất-performance-features)
-  - [4.10.1. Optimization](#4101-optimization)
-- [4.11. Lộ trình Phát triển Tính năng](#411-lộ-trình-phát-triển-tính-năng)
-  - [4.11.1. MVP (Giai đoạn 1 - 3 tháng)](#4111-mvp-giai-đoạn-1---3-tháng)
-  - [4.11.2. Giai đoạn 2 (3-6 tháng)](#4112-giai-đoạn-2-3-6-tháng)
-  - [4.11.3. Giai đoạn 3 (6-12 tháng)](#4113-giai-đoạn-3-6-12-tháng)
-- [4.12. Metrics & KPIs](#412-metrics--kpis)
-  - [4.12.1. Performance Metrics](#4121-performance-metrics)
-  - [4.12.2. User Engagement Metrics](#4122-user-engagement-metrics)
+4. [Tính năng Hệ thống (System Features)](#4-tính-năng-hệ-thống-system-features)
+   4.1. [Tổng quan Tính năng](#41-tổng-quan-tính-năng)  
+   4.2. [Tính năng Cốt lõi (Core Features)](#42-tính-năng-cốt-lõi-core-features)  
+       4.2.1. [Thu thập và Quản lý Dữ liệu](#421-thu-thập-và-quản-lý-dữ-liệu)  
+       4.2.2. [Tìm kiếm và Lọc](#422-tìm-kiếm-và-lọc)  
+       4.2.3. [Hiển thị và So sánh](#423-hiển-thị-và-so-sánh)  
+       4.2.4. [Upload và Phân tích BĐS](#424-upload-và-phân-tích-bđs)  
+       4.2.5. [Chi tiết Tính năng Upload và Phân tích](#425-chi-tiết-tính-năng-upload-và-phân-tích)  
+   4.3. [Tính năng Định giá (Valuation Features)](#43-tính-năng-định-giá-valuation-features)  
+       4.3.1. [AVM (Automated Valuation Model)](#431-avm-automated-valuation-model)  
+       4.3.2. [Manual Valuation](#432-manual-valuation)  
+   4.4. [Tính năng Phân tích (Analytics Features)](#44-tính-năng-phân-tích-analytics-features)  
+       4.4.1. [Market Analytics](#441-market-analytics)  
+       4.4.2. [Statistical Reports](#442-statistical-reports)  
+   4.5. [Tính năng Người dùng (User Features)](#45-tính-năng-người-dùng-user-features)  
+       4.5.1. [Authentication & Authorization](#451-authentication--authorization)  
+       4.5.2. [User Management](#452-user-management)  
+   4.6. [Tính năng Xuất báo cáo (Export Features)](#46-tính-năng-xuất-báo-cáo-export-features)  
+       4.6.1. [Report Generation](#461-report-generation)  
+       4.6.2. [Data Export](#462-data-export)  
+   4.7. [Tính năng Nâng cao (Advanced Features)](#47-tính-năng-nâng-cao-advanced-features)  
+       4.7.1. [AI & Machine Learning](#471-ai--machine-learning)  
+       4.7.2. [Integration & API](#472-integration--api)  
+   4.8. [Tính năng Mobile (Mobile Features)](#48-tính-năng-mobile-mobile-features)  
+       4.8.1. [Mobile App](#481-mobile-app)  
+   4.9. [Tính năng Bảo mật (Security Features)](#49-tính-năng-bảo-mật-security-features)  
+       4.9.1. [Data Protection](#491-data-protection)  
+   4.10. [Tính năng Hiệu suất (Performance Features)](#410-tính-năng-hiệu-suất-performance-features)  
+       4.10.1. [Optimization](#4101-optimization)  
+   4.11. [Lộ trình Phát triển Tính năng](#411-lộ-trình-phát-triển-tính-năng)  
+       4.11.1. [MVP (Giai đoạn 1 - 3 tháng)](#4111-mvp-giai-đoạn-1---3-tháng)  
+       4.11.2. [Giai đoạn 2 (3-6 tháng)](#4112-giai-đoạn-2-3-6-tháng)  
+       4.11.3. [Giai đoạn 3 (6-12 tháng)](#4113-giai-đoạn-3-6-12-tháng)  
+   4.12. [Metrics & KPIs](#412-metrics--kpis)  
+       4.12.1. [Performance Metrics](#4121-performance-metrics)  
+       4.12.2. [User Engagement Metrics](#4122-user-engagement-metrics)  
 
-### 5. [Thiết kế Hệ thống & Kiến trúc](#5-thiết-kế-hệ-thống--kiến-trúc)
-- [5.1. Thiết kế Tổng quan (Overall System Design)](#51-thiết-kế-tổng-quan-overall-system-design)
-  - [5.1.1. Kiến trúc Tổng thể Hệ thống](#511-kiến-trúc-tổng-thể-hệ-thống)
-  - [5.1.2. Mô tả Chi tiết Kiến trúc Hệ thống](#512-mô-tả-chi-tiết-kiến-trúc-hệ-thống)
-  - [5.1.3. Luồng Dữ liệu Chính](#513-luồng-dữ-liệu-chính)
-  - [5.1.4. Các Nguyên tắc Thiết kế](#514-các-nguyên-tắc-thiết-kế)
-  - [5.1.5. Công nghệ Stack](#515-công-nghệ-stack)
-- [5.2. Thiết kế Cơ sở dữ liệu (Database Design)](#52-thiết-kế-cơ-sở-dữ-liệu-database-design)
-  - [5.2.1. Tổng quan Kiến trúc Cơ sở dữ liệu](#521-tổng-quan-kiến-trúc-cơ-sở-dữ-liệu)
-  - [5.2.2. Cấu trúc Bảng chính](#522-cấu-trúc-bảng-chính)
-  - [5.2.3. Mối quan hệ và Khóa ngoại](#523-mối-quan-hệ-và-khóa-ngoại)
-  - [5.2.4. Bảo mật và Phân quyền (Row-Level Security)](#524-bảo-mật-và-phân-quyền-row-level-security)
-  - [5.2.5. Tối ưu hóa Hiệu suất](#525-tối-ưu-hóa-hiệu-suất)
-  - [5.2.6. Dữ liệu Mẫu và Seeding](#526-dữ-liệu-mẫu-và-seeding)
-  - [5.2.7. Backup và Recovery](#527-backup-và-recovery)
-  - [5.2.8. Monitoring và Maintenance](#528-monitoring-và-maintenance)
-- [5.3. Thiết kế Backend chi tiết (API)](#53-thiết-kế-backend-chi-tiết-api)
-  - [5.3.1. Endpoints Xác thực & Người dùng (Authentication & Users)](#531-endpoints-xác-thực--người-dùng-authentication--users)
-  - [5.3.2. Endpoints Bất động sản (Properties)](#532-endpoints-bất-động-sản-properties)
-  - [5.3.3. Endpoints Định giá & Tương tác (Valuation & Interaction)](#533-endpoints-định-giá--tương-tác-valuation--interaction)
-  - [5.3.4. Bảng Thiết kế Chi tiết API Endpoints](#534-bảng-thiết-kế-chi-tiết-api-endpoints)
-- [5.4. Tính năng Hệ thống (System Features)](#54-tính-năng-hệ-thống-system-features)
-  - [5.4.1. Tổng quan Tính năng](#541-tổng-quan-tính-năng)
-  - [5.4.2. Tính năng Cốt lõi (Core Features)](#542-tính-năng-cốt-lõi-core-features)
-  - [5.4.3. Tính năng Định giá (Valuation Features)](#543-tính-năng-định-giá-valuation-features)
-  - [5.4.4. Tính năng Phân tích (Analytics Features)](#544-tính-năng-phân-tích-analytics-features)
-  - [5.4.5. Tính năng Người dùng (User Features)](#545-tính-năng-người-dùng-user-features)
-  - [5.4.6. Tính năng Xuất báo cáo (Export Features)](#546-tính-năng-xuất-báo-cáo-export-features)
-  - [5.4.7. Tính năng Nâng cao (Advanced Features)](#547-tính-năng-nâng-cao-advanced-features)
-  - [5.4.8. Tính năng Mobile (Mobile Features)](#548-tính-năng-mobile-mobile-features)
-  - [5.4.9. Tính năng Bảo mật (Security Features)](#549-tính-năng-bảo-mật-security-features)
-  - [5.4.10. Tính năng Hiệu suất (Performance Features)](#5410-tính-năng-hiệu-suất-performance-features)
-  - [5.4.11. Lộ trình Phát triển Tính năng](#5411-lộ-trình-phát-triển-tính-năng)
-  - [5.4.12. Metrics & KPIs](#5412-metrics--kpis)
+5. [Thiết kế Hệ thống & Kiến trúc](#5-thiết-kế-hệ-thống--kiến-trúc)
+   5.1. [Thiết kế Tổng quan (Overall System Design)](#51-thiết-kế-tổng-quan-overall-system-design)  
+       5.1.1. [Kiến trúc Tổng thể Hệ thống](#511-kiến-trúc-tổng-thể-hệ-thống)  
+       5.1.2. [Mô tả Chi tiết Kiến trúc Hệ thống](#512-mô-tả-chi-tiết-kiến-trúc-hệ-thống)  
+       5.1.3. [Luồng Dữ liệu Chính](#513-luồng-dữ-liệu-chính)  
+       5.1.4. [Các Nguyên tắc Thiết kế](#514-các-nguyên-tắc-thiết-kế)  
+       5.1.5. [Công nghệ Stack](#515-công-nghệ-stack)  
+   5.2. [Thiết kế Cơ sở dữ liệu (Database Design)](#52-thiết-kế-cơ-sở-dữ-liệu-database-design)  
+       5.2.1. [Tổng quan Kiến trúc Cơ sở dữ liệu](#521-tổng-quan-kiến-trúc-cơ-sở-dữ-liệu)  
+       5.2.2. [Cấu trúc Bảng chính](#522-cấu-trúc-bảng-chính)  
+       5.2.3. [Mối quan hệ và Khóa ngoại](#523-mối-quan-hệ-và-khóa-ngoại)  
+       5.2.4. [Bảo mật và Phân quyền (Row-Level Security)](#524-bảo-mật-và-phân-quyền-row-level-security)  
+       5.2.5. [Tối ưu hóa Hiệu suất](#525-tối-ưu-hóa-hiệu-suất)  
+       5.2.6. [Dữ liệu Mẫu và Seeding](#526-dữ-liệu-mẫu-và-seeding)  
+       5.2.7. [Backup và Recovery](#527-backup-và-recovery)  
+       5.2.8. [Monitoring và Maintenance](#528-monitoring-và-maintenance)  
+   5.3. [Thiết kế Backend chi tiết (API)](#53-thiết-kế-backend-chi-tiết-api)  
+       5.3.1. [Endpoints Xác thực & Người dùng (Authentication & Users)](#531-endpoints-xác-thực--người-dùng-authentication--users)  
+       5.3.2. [Endpoints Bất động sản (Properties)](#532-endpoints-bất-động-sản-properties)  
+       5.3.3. [Endpoints Định giá & Tương tác (Valuation & Interaction)](#533-endpoints-định-giá--tương-tác-valuation--interaction)  
+       5.3.4. [Bảng Thiết kế Chi tiết API Endpoints](#534-bảng-thiết-kế-chi-tiết-api-endpoints)  
 
-### 6. [Lộ trình Triển khai MVP (Sản phẩm Khả thi Tối thiểu)](#6-lộ-trình-triển-khai-mvp-sản-phẩm-khả-thi-tối-thiểu)
-- [6.1. MVP 1: Nền tảng Dữ liệu (Mục tiêu: 1-2 tháng)](#61-mvp-1-nền-tảng-dữ-liệu-mục-tiêu-1-2-tháng)
-- [6.2. MVP 2: Lớp Thông minh (Mục tiêu: +2 tháng)](#62-mvp-2-lớp-thông-minh-mục-tiêu-2-tháng)
-- [6.3. MVP 3: Bộ công cụ Chuyên nghiệp & Giữ chân Người dùng (Mục tiêu: +2 tháng)](#63-mvp-3-bộ-công-cụ-chuyên-nghiệp--giữ-chân-người-dùng-mục-tiêu-2-tháng)
+6. [Lộ trình Triển khai MVP (Sản phẩm Khả thi Tối thiểu)](#6-lộ-trình-triển-khai-mvp-sản-phẩm-khả-thi-tối-thiểu)
+   6.1. [MVP 1: Nền tảng Dữ liệu (Mục tiêu: 1-2 tháng)](#61-mvp-1-nền-tảng-dữ-liệu-mục-tiêu-1-2-tháng)  
+   6.2. [MVP 2: Lớp Thông minh (Mục tiêu: +2 tháng)](#62-mvp-2-lớp-thông-minh-mục-tiêu-2-tháng)  
+   6.3. [MVP 3: Bộ công cụ Chuyên nghiệp & Giữ chân Người dùng (Mục tiêu: +2 tháng)](#63-mvp-3-bộ-công-cụ-chuyên-nghiệp--giữ-chân-người-dùng-mục-tiêu-2-tháng)  
 
-### 7. [Các Chỉ số Thành công (Success Metrics)](#7-các-chỉ-số-thành-công-success-metrics)
-- [7.1. Tương tác Người dùng](#71-tương-tác-người-dùng)
-- [7.2. Chất lượng Dữ liệu & "Sức khỏe" của Trình thu thập](#72-chất-lượng-dữ-liệu--sức-khỏe-của-trình-thu-thập)
-- [7.3. Chuyển đổi & Mức độ chấp nhận của Người dùng Chuyên nghiệp](#73-chuyển-đổi--mức-độ-chấp-nhận-của-người-dùng-chuyên-nghiệp)
+7. [Các Chỉ số Thành công (Success Metrics)](#7-các-chỉ-số-thành-công-success-metrics)
+   7.1. [Tương tác Người dùng](#71-tương-tác-người-dùng)  
+   7.2. [Chất lượng Dữ liệu & "Sức khỏe" của Trình thu thập](#72-chất-lượng-dữ-liệu--sức-khỏe-của-trình-thu-thập)  
+   7.3. [Chuyển đổi & Mức độ chấp nhận của Người dùng Chuyên nghiệp](#73-chuyển-đổi--mức-độ-chấp-nhận-của-người-dùng-chuyên-nghiệp)  
+
+8. [Yêu cầu phi chức năng (Non-Functional Requirements)](#8-yêu-cầu-phi-chức-năng-non-functional-requirements)
+   8.1. [Hiệu năng (Performance)](#81-hiệu-năng-performance)  
+   8.2. [Khả năng mở rộng (Scalability)](#82-khả-năng-mở-rộng-scalability)  
+   8.3. [Bảo mật (Security)](#83-bảo-mật-security)  
+   8.4. [Độ tin cậy & Sẵn sàng (Reliability & Availability)](#84-độ-tin-cậy--sẵn-sàng-reliability--availability)  
+   8.5. [Khả năng sử dụng & Truy cập (Usability & Accessibility)](#85-khả-năng-sử-dụng--truy-cập-usability--accessibility)  
+   8.6. [Tuân thủ pháp lý (Compliance)](#86-tuân-thủ-pháp-lý-compliance)  
+
+9. [Ma trận truy vết yêu cầu (Requirements Traceability Matrix)](#9-ma-trận-truy-vết-yêu-cầu-requirements-traceability-matrix)
 
 ---
 
@@ -771,39 +768,36 @@ Hệ thống Phân tích Bất động sản được thiết kế với các t�
 
 #### 4.11.1. MVP (Giai đoạn 1 - 3 tháng)
 
-**Tính năng bắt buộc:**
-- ✅ Thu thập dữ liệu cơ bản
-- ✅ Tìm kiếm và lọc BĐS
-- ✅ Hiển thị thông tin BĐS
-- ✅ AVM cơ bản
-- ✅ Đăng ký/đăng nhập
-- ✅ Xuất báo cáo đơn giản
-- ✅ Upload thông tin BĐS cơ bản
-- ✅ Tìm BĐS tương tự đơn giản
+- Thu thập dữ liệu cơ bản
+- Tìm kiếm và lọc BĐS
+- Hiển thị thông tin BĐS
+- AVM cơ bản
+- Đăng ký/đăng nhập
+- Xuất báo cáo đơn giản
+- Upload thông tin BĐS cơ bản
+- Tìm BĐS tương tự đơn giản
 
 #### 4.11.2. Giai đoạn 2 (3-6 tháng)
 
-**Tính năng nâng cao:**
-- 🔄 Dashboard phân tích thị trường
-- 🔄 API công khai
-- 🔄 Định giá thủ công
-- 🔄 Báo cáo chi tiết
-- 🔄 Mobile responsive
-- 🔄 Upload & phân tích BĐS nâng cao
-- 🔄 AI tìm BĐS tương tự thông minh
-- 🔄 Phân tích hình ảnh BĐS
+- Dashboard phân tích thị trường
+- API công khai
+- Định giá thủ công
+- Báo cáo chi tiết
+- Mobile responsive
+- Upload & phân tích BĐS nâng cao
+- AI tìm BĐS tương tự thông minh
+- Phân tích hình ảnh BĐS
 
 #### 4.11.3. Giai đoạn 3 (6-12 tháng)
 
-**Tính năng chuyên sâu:**
-- 📋 AI/ML nâng cao
-- 📋 Mobile app đầy đủ
-- 📋 Tích hợp bên thứ ba
-- 📋 Tính năng cộng tác
-- 📋 Analytics nâng cao
-- 📋 AI phân tích hình ảnh BĐS nâng cao
-- 📋 Dự báo giá dựa trên upload
-- 📋 Gợi ý BĐS thông minh
+- AI/ML nâng cao
+- Mobile app đầy đủ
+- Tích hợp bên thứ ba
+- Tính năng cộng tác
+- Analytics nâng cao
+- AI phân tích hình ảnh BĐS nâng cao
+- Dự báo giá dựa trên upload
+- Gợi ý BĐS thông minh
 
 ### 4.12. Metrics & KPIs
 
@@ -833,74 +827,9 @@ Hệ thống Phân tích Bất động sản được thiết kế với các t�
 
 Đây là thành phần quan trọng và phức tạp nhất, đòi hỏi một kiến trúc lai (Hybrid Architecture) để đảm bảo hiệu suất, sự ổn định và khả năng thích ứng lâu dài.
 
-#### 4.1.1. Tổng quan Kiến trúc Scraper
+### 5.1. Thiết kế Tổng quan (Overall System Design)
 
-Hệ thống scraping sẽ được xây dựng dựa trên một bộ điều phối trung tâm (Orchestrator) và một bộ công cụ thu thập đa dạng. Bộ điều phối sẽ quyết định sử dụng công cụ nào cho từng tác vụ cụ thể, tối ưu hóa giữa tốc độ và khả năng xử lý.
-
-**Bộ điều phối (Orchestrator):** Scrapy Framework. Scrapy không chỉ là một scraper, mà là một framework hoàn chỉnh, chịu trách nhiệm:
-
-- **Lập lịch và Đồng bộ hóa (Scheduling & Concurrency):** Quản lý hàng đợi các URL cần thu thập, kiểm soát số lượng yêu cầu đồng thời để tối ưu hiệu suất và tránh gây quá tải.
-- **Quản lý Middleware:** Xử lý các tác vụ trung gian như xoay vòng proxy, thay đổi User-Agent, và tự động thử lại các yêu cầu thất bại.
-- **Item Pipeline:** Một chuỗi các bước xử lý dữ liệu sau khi thu thập, bao gồm làm sạch, chuẩn hóa, xác thực và lưu trữ vào cơ sở dữ liệu.
-- **Cơ chế Ra quyết định:** Dựa trên cấu hình cho từng domain, Scrapy sẽ quyết định "giao việc" cho công cụ thu thập phù hợp.
-
-#### 4.1.2. Bộ công cụ Thu thập Dữ liệu
-
-##### A. Requests + BeautifulSoup4 (Trình thu thập Tĩnh - Lightweight Static Scraper)
-
-**Công nghệ:** Thư viện requests để thực hiện các yêu cầu HTTP và BeautifulSoup4 để phân tích cú pháp HTML tĩnh.
-
-**Trường hợp sử dụng:**
-- Tốc độ cao nhất: Dành cho các trang web có nội dung được trả về trực tiếp trong mã HTML ban đầu (server-side rendering).
-- Tác vụ phụ trợ: Tìm nạp và phân tích các tệp robots.txt và sitemap.xml một cách hiệu quả.
-
-**Ưu điểm:**
-- Cực kỳ nhanh: Không cần render trang, chỉ tải và phân tích văn bản.
-- Tiêu thụ tài nguyên thấp: Yêu cầu rất ít CPU và bộ nhớ.
-
-**Nhược điểm:**
-- Hoàn toàn không thể xử lý nội dung được tạo ra bởi JavaScript phía client.
-
-##### B. Playwright (Trình render Động - Heavy-Duty Dynamic Renderer)
-
-**Công nghệ:** Playwright, một thư viện tự động hóa trình duyệt hiện đại của Microsoft.
-
-**Trường hợp sử dụng:**
-- Trang web phức tạp: Dành cho các Single-Page Application (SPA) xây dựng bằng React, Vue, Angular, nơi dữ liệu được tải thông qua các lệnh gọi API sau khi trang đã tải xong.
-- Tương tác người dùng: Có khả năng mô phỏng các hành động của người dùng như cuộn trang để tải thêm dữ liệu (infinite scroll), nhấp vào nút để mở popup, hoặc điền vào biểu mẫu.
-
-**Quy trình tích hợp với Scrapy:**
-1. Scrapy Downloader Middleware sẽ chặn một yêu cầu được đánh dấu là "động".
-2. Middleware này gọi Playwright để mở một trang mới trong một trình duyệt không giao diện (headless Chromium).
-3. Playwright điều hướng đến URL, chờ cho đến khi các phần tử dữ liệu quan trọng xuất hiện (`page.wait_for_selector()`) hoặc mạng không còn hoạt động (`page.wait_for_load_state('networkidle')`).
-4. Playwright trích xuất mã HTML cuối cùng (`page.content()`) và trả về cho Scrapy.
-5. Scrapy Spider tiếp tục phân tích HTML này như bình thường.
-
-**Ưu điểm:**
-- Khả năng xử lý tối đa: Có thể thu thập dữ liệu từ bất kỳ trang web nào mà trình duyệt có thể hiển thị.
-- Độ tin cậy cao: Cung cấp các cơ chế chờ đợi thông minh, giảm thiểu lỗi do tải trang chậm.
-
-**Nhược điểm:**
-- Tiêu thụ tài nguyên cao: Mỗi yêu cầu cần khởi chạy một instance trình duyệt, tốn nhiều CPU và bộ nhớ hơn đáng kể.
-- Chậm hơn: Quá trình render làm tăng đáng kể thời gian cho mỗi yêu cầu.
-
-##### C. Puppeteer (Giải pháp thay thế cho Playwright)
-
-> **Ghi chú:** Puppeteer là một thư viện tương tự Playwright, được phát triển bởi Google và cũng rất mạnh mẽ. Việc lựa chọn giữa Playwright và Puppeteer thường phụ thuộc vào sở thích của đội ngũ phát triển. Trong tài liệu này, chúng ta chuẩn hóa việc sử dụng Playwright, nhưng ghi nhận Puppeteer là một giải pháp thay thế hoàn toàn khả thi.
-
-#### 4.1.3. Chiến lược Chống chặn và Đảm bảo Độ bền
-
-**Quản lý Proxy:** Tích hợp một dịch vụ proxy của bên thứ ba (ví dụ: Bright Data, Smartproxy) để có một bể chứa lớn các địa chỉ IP (cả dân cư và trung tâm dữ liệu) và tự động xoay vòng chúng cho mỗi yêu cầu.
-
-**Quản lý Danh tính Trình duyệt:**
-- Xoay vòng User-Agent: Duy trì một danh sách các chuỗi User-Agent của các trình duyệt phổ biến và chọn ngẫu nhiên cho mỗi yêu cầu.
-- Quản lý Header: Mô phỏng các HTTP header đầy đủ giống như một trình duyệt thực.
-
-**Xử lý CAPTCHA:** Lên kế hoạch cho tương lai bằng cách thiết kế hệ thống để có thể tích hợp các dịch vụ giải CAPTCHA của bên thứ ba (ví dụ: 2Captcha, Anti-CAPTCHA) thông qua một API nếu các trang web mục tiêu bắt đầu triển khai các biện pháp bảo vệ nâng cao.
-
-### 4.1. Thiết kế Tổng quan (Overall System Design)
-
-#### 4.1.1. Kiến trúc Tổng thể Hệ thống
+#### 5.1.1. Kiến trúc Tổng thể Hệ thống
 
 ```mermaid
 graph TB
@@ -1851,27 +1780,73 @@ Hệ thống Phân tích Bất động sản được thiết kế với các t�
 | **Report Downloads** | > 50/ngày | Analytics |
 | **User Retention** | > 70% sau 30 ngày | Analytics |
 
-## 5. Lộ trình Triển khai MVP (Sản phẩm Khả thi Tối thiểu)
+## 6. Ma trận mappping yêu cầu (Requirements Traceability Matrix)
 
-### MVP 1: Nền tảng Dữ liệu (Mục tiêu: 1-2 tháng)
+| Mã yêu cầu | Mô tả yêu cầu | Persona liên quan | Mục tiêu kinh doanh | Tính năng liên quan |
+|------------|---------------|------------------|---------------------|---------------------|
+| FR-01 | Định giá tự động (AVM) với độ chính xác cao | Banker, Analyst, Agent, Seeker | Tăng tốc độ định giá, tăng độ chính xác, giảm chi phí vận hành | AVM, Báo cáo định giá, API AVM |
+| FR-02 | Định giá thủ công bởi chuyên gia | Banker, Agent, Analyst | Đáp ứng yêu cầu nghiệp vụ ngân hàng, tăng độ tin cậy | Định giá thủ công, Báo cáo định giá |
+| FR-03 | Tìm kiếm bất động sản nâng cao với bộ lọc đa tiêu chí | Seeker, Agent, Analyst | Tăng trải nghiệm người dùng, tăng tỷ lệ chuyển đổi | Tìm kiếm, Lọc, Bản đồ, So sánh |
+| FR-04 | Tìm kiếm theo vị trí địa lý (bản đồ, radius) | Seeker, Agent | Tăng độ chính xác tìm kiếm, tăng tương tác | Tìm kiếm bản đồ, PostGIS, Nearby Search |
+| FR-05 | So sánh bất động sản side-by-side | Seeker, Agent | Hỗ trợ quyết định mua/bán, tăng giá trị dịch vụ | So sánh, Báo cáo so sánh |
+| FR-06 | Upload thông tin BĐS để phân tích và định giá | Seeker, Banker, Agent | Tăng tương tác, thu thập dữ liệu, cá nhân hóa dịch vụ | Upload, Phân tích, AVM, So sánh |
+| FR-07 | Phân tích hình ảnh BĐS bằng AI | Banker, Analyst, Agent | Nâng cao chất lượng dữ liệu, tăng độ tin cậy định giá | AI hình ảnh, Upload, Báo cáo |
+| FR-08 | Dashboard phân tích thị trường real-time | Analyst, Banker | Hỗ trợ ra quyết định, tăng giá trị phân tích | Dashboard, Báo cáo, Analytics |
+| FR-09 | Lịch sử biến động giá và thống kê | Analyst, Banker, Seeker | Tăng minh bạch, hỗ trợ phân tích xu hướng | Lịch sử giá, Báo cáo, Analytics |
+| FR-10 | API tích hợp cho hệ thống bên ngoài | Banker, Developer, Analyst | Mở rộng hệ sinh thái, tăng doanh thu | API, Export, Webhook |
+| FR-11 | Quản lý người dùng, phân quyền, xác thực JWT | Tất cả | Đảm bảo bảo mật, tuân thủ pháp lý | Đăng ký, Đăng nhập, Quản lý vai trò, JWT |
+| FR-12 | Xác thực hai lớp (2FA) cho người dùng chuyên nghiệp | Banker, Agent, Analyst | Tăng bảo mật, đáp ứng tiêu chuẩn ngành | 2FA, Quản lý người dùng |
+| FR-13 | Quản lý danh sách yêu thích | Seeker, Agent | Tăng trải nghiệm, tăng tỷ lệ quay lại | Yêu thích, Lưu tìm kiếm |
+| FR-14 | Xuất báo cáo PDF/Excel | Banker, Analyst, Agent | Hỗ trợ nghiệp vụ, tăng giá trị dịch vụ | Export, Báo cáo, API Export |
+| FR-15 | Thông báo đẩy và email | Seeker, Agent | Tăng tương tác, giữ chân người dùng | Notification, Email, Push |
+| FR-16 | Quản lý dự án BĐS (project) | Developer, Analyst, Agent | Hỗ trợ phân tích dự án, mở rộng đối tượng | Quản lý dự án, Báo cáo dự án |
+| FR-17 | Tích hợp dữ liệu pháp lý, quy hoạch | Banker, Analyst, Agent | Tăng độ tin cậy, đáp ứng nghiệp vụ ngân hàng | Pháp lý, Quy hoạch, Upload giấy tờ |
+| FR-18 | Quản lý lịch sử định giá, audit trail | Banker, Analyst, Admin | Đáp ứng kiểm toán, tăng minh bạch | Lịch sử định giá, Audit, Báo cáo |
+| FR-19 | Tìm kiếm BĐS tương tự bằng AI | Seeker, Banker, Agent | Tăng giá trị phân tích, hỗ trợ quyết định | AI tương tự, So sánh, Upload |
+| FR-20 | Quản lý backup, phục hồi dữ liệu | Admin, DevOps | Đảm bảo an toàn dữ liệu, tuân thủ pháp lý | Backup, Recovery, Monitoring |
+| FR-21 | Tuân thủ GDPR/Nghị định 13 về bảo vệ dữ liệu cá nhân | Tất cả | Đáp ứng pháp lý, tăng niềm tin người dùng | Xóa dữ liệu, Quyền truy cập dữ liệu |
+| FR-22 | Hỗ trợ đa ngôn ngữ (tiếng Việt, tiếng Anh) | Tất cả | Mở rộng thị trường, tăng trải nghiệm | Đa ngôn ngữ, Giao diện |
+| FR-23 | Tối ưu hiệu năng (caching, CDN, indexing) | Tất cả | Đảm bảo tốc độ, tăng hài lòng người dùng | Caching, CDN, Indexing |
+| FR-24 | Hỗ trợ mobile app và responsive web | Seeker, Agent | Tăng khả năng tiếp cận, tăng DAU | Mobile, Responsive, PWA |
+| FR-25 | Quản lý và phân tích dữ liệu upload | Analyst, Admin | Nâng cao chất lượng dữ liệu, hỗ trợ phân tích | Analytics, Upload, Báo cáo |
 
-**Mục tiêu:** Xác thực pipeline dữ liệu cốt lõi.
+## 7. Lộ trình Phát triển Tính năng
 
-**Tính năng:** Xây dựng trình thu thập Scrapy + Playwright cho batdongsan.com.vn. Thiết lập CSDL, các endpoint backend cơ bản (GET /properties, GET /properties/{id}), và giao diện React đơn giản để duyệt tin.
+**Tính năng bắt buộc:**
+- ✅ Thu thập dữ liệu cơ bản
+- ✅ Tìm kiếm và lọc BĐS
+- ✅ Hiển thị thông tin BĐS
+- ✅ AVM cơ bản
+- ✅ Đăng ký/đăng nhập
+- ✅ Xuất báo cáo đơn giản
+- ✅ Upload thông tin BĐS cơ bản
+- ✅ Tìm BĐS tương tự đơn giản
 
-### MVP 2: Lớp Thông minh (Mục tiêu: +2 tháng)
+#### 4.11.2. Giai đoạn 2 (3-6 tháng)
 
-**Mục tiêu:** Giới thiệu các tính năng AI và so sánh cốt lõi.
+**Tính năng nâng cao:**
+- 🔄 Dashboard phân tích thị trường
+- 🔄 API công khai
+- 🔄 Định giá thủ công
+- 🔄 Báo cáo chi tiết
+- 🔄 Mobile responsive
+- 🔄 Upload & phân tích BĐS nâng cao
+- 🔄 AI tìm BĐS tương tự thông minh
+- 🔄 Phân tích hình ảnh BĐS
 
-**Tính năng:** Thêm trình thu thập cho alonhadat.com.vn. Phát triển và tích hợp mô hình LightGBM v1. Xây dựng các tính năng/endpoint: ước tính giá, bất động sản tương tự và xuất ra excel.
+#### 4.11.3. Giai đoạn 3 (6-12 tháng)
 
-### MVP 3: Bộ công cụ Chuyên nghiệp & Giữ chân Người dùng (Mục tiêu: +2 tháng)
+**Tính năng chuyên sâu:**
+- 📋 AI/ML nâng cao
+- 📋 Mobile app đầy đủ
+- 📋 Tích hợp bên thứ ba
+- 📋 Tính năng cộng tác
+- 📋 Analytics nâng cao
+- 📋 AI phân tích hình ảnh BĐS nâng cao
+- 📋 Dự báo giá dựa trên upload
+- 📋 Gợi ý BĐS thông minh
 
-**Mục tiêu:** Giới thiệu các tính năng cho người dùng chuyên nghiệp.
-
-**Tính năng:** Thêm trình thu thập thông tin quy hoạch/pháp lý. Triển khai xác thực JWT với vai trò người dùng. Xây dựng tính năng "Yêu thích" và Giao diện/Endpoint Điều chỉnh Thủ công cho người dùng "Professional".
-
-## 6. Các Chỉ số Thành công (Success Metrics)
+## 8. Các Chỉ số Thành công (Success Metrics)
 
 ### Tương tác Người dùng
 - Người dùng hoạt động hàng ngày (DAU)
@@ -1886,3 +1861,32 @@ Hệ thống Phân tích Bất động sản được thiết kế với các t�
 - Số lượng đăng ký người dùng mới (phân theo vai trò)
 - Số lượng định giá thủ công được gửi
 - Số lượt xuất file Excel được thực hiện
+
+
+
+## 9. Yêu cầu phi chức năng (Non-Functional Requirements)
+
+### Hiệu năng (Performance)
+- Thời gian phản hồi API trung bình dưới 200ms cho 95% request.
+- Thời gian tải trang web dưới 2 giây với kết nối 20Mbps.
+
+### Khả năng mở rộng (Scalability)
+- Hệ thống hỗ trợ tối thiểu 10.000 người dùng đồng thời.
+- Có thể mở rộng ngang hàng các dịch vụ backend và frontend.
+
+### Bảo mật (Security)
+- Mã hóa toàn bộ dữ liệu khi truyền và lưu trữ (TLS, AES-256).
+- Xác thực hai lớp (2FA) cho người dùng chuyên nghiệp.
+- Tuân thủ các tiêu chuẩn bảo mật OWASP Top 10.
+
+### Độ tin cậy & Sẵn sàng (Reliability & Availability)
+- Đảm bảo uptime hệ thống tối thiểu 99.9% mỗi tháng.
+- Có cơ chế tự động phát hiện và phục hồi lỗi dịch vụ.
+
+### Khả năng sử dụng & Truy cập (Usability & Accessibility)
+- Giao diện tuân thủ tiêu chuẩn WCAG 2.1 AA.
+- Hỗ trợ tiếng Việt và tiếng Anh.
+
+### Tuân thủ pháp lý (Compliance)
+- Tuân thủ Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân tại Việt Nam.
+- Hỗ trợ xóa dữ liệu theo yêu cầu người dùng (right to be forgotten).
