@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "BDS Analyzer":
+    - /url: /
+  - button
+- navigation:
+  - link "Trang chủ":
+    - /url: /
+- main:
+  - heading "Phân tích bất động sản thông minh" [level=1]
+  - paragraph: Định giá chính xác, phân tích thị trường chuyên sâu với công nghệ AI tiên tiến
+  - textbox "Nhập địa chỉ hoặc tên dự án..."
+  - link "Tìm kiếm":
+    - /url: /search?q=
+  - link "Định giá bất động sản":
+    - /url: /upload
+  - link "Xem báo cáo thị trường":
+    - /url: /valuation
+  - heading "Thống kê thị trường" [level=2]
+  - paragraph: Cập nhật thông tin thị trường bất động sản mới nhất
+  - heading "2,847" [level=3]
+  - paragraph: Tổng giao dịch tháng
+  - text: +12.5%
+  - heading "65.2M" [level=3]
+  - paragraph: Giá trung bình/m²
+  - text: +8.3%
+  - heading "Quận 7" [level=3]
+  - paragraph: Khu vực hot nhất
+  - text: +15.2%
+  - heading "89%" [level=3]
+  - paragraph: Tỷ lệ tăng giá
+  - text: +5.1%
+  - heading "Bất động sản nổi bật" [level=2]
+  - paragraph: Những dự án được quan tâm nhiều nhất
+  - 'link "Căn hộ cao cấp Vinhomes Central Park Căn hộ 5.2 tỷ Căn hộ cao cấp Vinhomes Central Park Quận Bình Thạnh, TP.HCM Diện tích: 85m²"':
+    - /url: /property/1
+    - img "Căn hộ cao cấp Vinhomes Central Park"
+    - text: Căn hộ 5.2 tỷ
+    - heading "Căn hộ cao cấp Vinhomes Central Park" [level=3]
+    - text: "Quận Bình Thạnh, TP.HCM Diện tích: 85m²"
+  - 'link "Nhà phố thương mại Phú Mỹ Hưng Nhà phố 12.8 tỷ Nhà phố thương mại Phú Mỹ Hưng Quận 7, TP.HCM Diện tích: 120m²"':
+    - /url: /property/2
+    - img "Nhà phố thương mại Phú Mỹ Hưng"
+    - text: Nhà phố 12.8 tỷ
+    - heading "Nhà phố thương mại Phú Mỹ Hưng" [level=3]
+    - text: "Quận 7, TP.HCM Diện tích: 120m²"
+  - 'link "Biệt thự đơn lập Thảo Điền Biệt thự 25.5 tỷ Biệt thự đơn lập Thảo Điền Quận 2, TP.HCM Diện tích: 300m²"':
+    - /url: /property/3
+    - img "Biệt thự đơn lập Thảo Điền"
+    - text: Biệt thự 25.5 tỷ
+    - heading "Biệt thự đơn lập Thảo Điền" [level=3]
+    - text: "Quận 2, TP.HCM Diện tích: 300m²"
+  - link "Xem tất cả bất động sản":
+    - /url: /search
+- contentinfo:
+  - paragraph: © 2024 BDS Analyzer. Phân tích bất động sản thông minh.
+- region "Notifications alt+T"
+- button "Open Tanstack query devtools":
+  - img
+- region "Notifications alt+T"
+```

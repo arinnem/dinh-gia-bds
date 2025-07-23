@@ -10,7 +10,11 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import time
 import random
+import os
+import uuid
 from datetime import datetime
+from typing import List, Optional, Dict, Any
+from pathlib import Path
 
 # Assuming your PropertyCreate schema and PropertyService are accessible
 # This is a conceptual import path, adjust based on your project structure
@@ -71,12 +75,14 @@ async def fetch_sitemap_urls(sitemap_url: str) -> List[str]:
         print(f"An unexpected error occurred fetching sitemap {sitemap_url}: {e}")
     return urls
 
-def setup_selenium_driver():
+def setup_selenium_driver(headless: bool = True):
     """Sets up and returns a Selenium WebDriver instance."""
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # Run in headless mode (no browser UI)
+    if headless:
+        options.add_argument("--headless")  # Run in headless mode (no browser UI)
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920,1080")  # Set window size for consistent screenshots
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36")
     try:
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
@@ -86,7 +92,41 @@ def setup_selenium_driver():
         driver = webdriver.Chrome(options=options) # Fallback to system chromedriver
     return driver
 
-def parse_listing_page(html_content: str, url: str) -> Optional[Dict[str, Any]]:
+def capture_page_screenshot(driver, url: str, screenshots_dir: str = "screenshots") -> Optional[Dict[str, Any]]:
+    """Captures a screenshot of the current page and saves it."""
+    try:
+        # Create screenshots directory if it doesn't exist
+        Path(screenshots_dir).mkdir(parents=True, exist_ok=True)
+        
+        # Generate unique filename
+        screenshot_id = str(uuid.uuid4())
+        filename = f"screenshot_{screenshot_id}.png"
+        filepath = os.path.join(screenshots_dir, filename)
+        
+        # Capture screenshot
+        driver.save_screenshot(filepath)
+        
+        # Get file size
+        file_size = os.path.getsize(filepath)
+        
+        screenshot_data = {
+            "screenshot_id": screenshot_id,
+            "screenshot_path": filepath,
+            "screenshot_url": f"/screenshots/{filename}",  # URL path for serving
+            "page_url": url,
+            "file_size": file_size,
+            "image_format": "png",
+            "captured_at": datetime.utcnow()
+        }
+        
+        print(f"Screenshot captured: {filepath} ({file_size} bytes)")
+        return screenshot_data
+        
+    except Exception as e:
+        print(f"Error capturing screenshot for {url}: {e}")
+        return None
+
+def parse_listing_page(html_content: str, url: str, screenshot_data: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
     """
     Parses the HTML content of a single listing page.
     This function requires ACTUAL CSS SELECTORS from alonhadat.com.vn.
@@ -94,6 +134,10 @@ def parse_listing_page(html_content: str, url: str) -> Optional[Dict[str, Any]]:
     """
     soup = BeautifulSoup(html_content, 'html.parser')
     data = {"listing_url": url, "data_source_listing": "alonhadat.com.vn", "scraped_at": datetime.utcnow()}
+    
+    # Include screenshot data if available
+    if screenshot_data:
+        data["screenshot_data"] = screenshot_data
 
     try:
         # --- !!! THESE ARE PLACEHOLDERS - UPDATE WITH ACTUAL SELECTORS !!! ---
@@ -156,8 +200,11 @@ async def scrape_single_listing(driver, url: str, property_service=None): # Add 
         # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, "h1.title-property"))) # Example
         await asyncio.sleep(random.uniform(2, 5)) # Respectful delay
 
+        # Capture screenshot after page loads
+        screenshot_data = capture_page_screenshot(driver, url)
+        
         page_content = driver.page_source
-        parsed_data = parse_listing_page(page_content, url)
+        parsed_data = parse_listing_page(page_content, url, screenshot_data)
 
         if parsed_data:
             print(f"Successfully parsed: {parsed_data.get('address_full', url)}")

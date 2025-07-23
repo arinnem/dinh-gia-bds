@@ -1,0 +1,61 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "BDS Analyzer":
+    - /url: /
+  - button
+- navigation:
+  - link "Trang chủ":
+    - /url: /
+  - link "Tìm kiếm":
+    - /url: /search
+- main:
+  - textbox "Tìm kiếm theo địa chỉ, dự án..."
+  - button
+  - button "Bộ lọc"
+  - button "Danh sách"
+  - button "Bản đồ"
+  - paragraph: Tìm thấy 5 kết quả
+  - 'link "Căn hộ cao cấp Vinhomes Central Park Căn hộ 5.2 tỷ Căn hộ cao cấp Vinhomes Central Park Quận Bình Thạnh, TP.HCM Diện tích: 85m² 2 PN • 2 WC Căn hộ cao cấp với view sông Sài Gòn, đầy đủ tiện ích"':
+    - /url: /property/1
+    - img "Căn hộ cao cấp Vinhomes Central Park"
+    - text: Căn hộ 5.2 tỷ
+    - heading "Căn hộ cao cấp Vinhomes Central Park" [level=3]
+    - text: "Quận Bình Thạnh, TP.HCM Diện tích: 85m² 2 PN • 2 WC"
+    - paragraph: Căn hộ cao cấp với view sông Sài Gòn, đầy đủ tiện ích
+  - 'link "Nhà phố thương mại Phú Mỹ Hưng Nhà phố 12.8 tỷ Nhà phố thương mại Phú Mỹ Hưng Quận 7, TP.HCM Diện tích: 120m² 3 PN • 3 WC Nhà phố kinh doanh tại khu đô thị Phú Mỹ Hưng"':
+    - /url: /property/2
+    - img "Nhà phố thương mại Phú Mỹ Hưng"
+    - text: Nhà phố 12.8 tỷ
+    - heading "Nhà phố thương mại Phú Mỹ Hưng" [level=3]
+    - text: "Quận 7, TP.HCM Diện tích: 120m² 3 PN • 3 WC"
+    - paragraph: Nhà phố kinh doanh tại khu đô thị Phú Mỹ Hưng
+  - 'link "Biệt thự đơn lập Thảo Điền Biệt thự 25.5 tỷ Biệt thự đơn lập Thảo Điền Quận 2, TP.HCM Diện tích: 300m² 4 PN • 4 WC Biệt thự sang trọng với sân vườn và hồ bơi riêng"':
+    - /url: /property/3
+    - img "Biệt thự đơn lập Thảo Điền"
+    - text: Biệt thự 25.5 tỷ
+    - heading "Biệt thự đơn lập Thảo Điền" [level=3]
+    - text: "Quận 2, TP.HCM Diện tích: 300m² 4 PN • 4 WC"
+    - paragraph: Biệt thự sang trọng với sân vườn và hồ bơi riêng
+  - 'link "Chung cư The Manor Mễ Trì Căn hộ 3.8 tỷ Chung cư The Manor Mễ Trì Quận Nam Từ Liêm, Hà Nội Diện tích: 95m² 3 PN • 2 WC Chung cư cao cấp tại trung tâm Hà Nội"':
+    - /url: /property/4
+    - img "Chung cư The Manor Mễ Trì"
+    - text: Căn hộ 3.8 tỷ
+    - heading "Chung cư The Manor Mễ Trì" [level=3]
+    - text: "Quận Nam Từ Liêm, Hà Nội Diện tích: 95m² 3 PN • 2 WC"
+    - paragraph: Chung cư cao cấp tại trung tâm Hà Nội
+  - 'link "Shophouse Vinhomes Ocean Park Nhà phố 8.5 tỷ Shophouse Vinhomes Ocean Park Quận Gia Lâm, Hà Nội Diện tích: 150m² 4 PN • 3 WC Shophouse kinh doanh tại khu đô thị Vinhomes Ocean Park"':
+    - /url: /property/5
+    - img "Shophouse Vinhomes Ocean Park"
+    - text: Nhà phố 8.5 tỷ
+    - heading "Shophouse Vinhomes Ocean Park" [level=3]
+    - text: "Quận Gia Lâm, Hà Nội Diện tích: 150m² 4 PN • 3 WC"
+    - paragraph: Shophouse kinh doanh tại khu đô thị Vinhomes Ocean Park
+- contentinfo:
+  - paragraph: © 2024 BDS Analyzer. Phân tích bất động sản thông minh.
+- region "Notifications alt+T"
+- button "Open Tanstack query devtools":
+  - img
+- region "Notifications alt+T"
+```

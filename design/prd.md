@@ -1890,3 +1890,276 @@ Hệ thống Phân tích Bất động sản được thiết kế với các t�
 ### Tuân thủ pháp lý (Compliance)
 - Tuân thủ Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân tại Việt Nam.
 - Hỗ trợ xóa dữ liệu theo yêu cầu người dùng (right to be forgotten).
+
+## 10. Sơ đồ Quan hệ Chức năng và Thành phần (Function-Component Relationship)
+
+### Mermaid Chart: Kiến trúc Hệ thống và Luồng Dữ liệu
+
+```mermaid
+graph TB
+    %% User Interface Layer
+    subgraph "Frontend Layer"
+        UI["🖥️ User Interface"]
+        VD["📊 ValuationDashboard"]
+        AD["⚙️ AdminDashboard"]
+        PS["🔍 PropertySearch"]
+        CR["📋 ComparisonReport"]
+    end
+
+    %% Service Layer
+    subgraph "Service Layer"
+        AVM["🤖 AutomatedValuationModel"]
+        RS["🕷️ RealEstateScraper"]
+        API["🔌 API Services"]
+        AUTH["🔐 Authentication"]
+    end
+
+    %% Data Processing Layer
+    subgraph "Data Processing"
+        BDS["🏠 BDS Scraper"]
+        ALD["🏘️ Alonhadat Scraper"]
+        IMG["📸 Screenshot Capture"]
+        ML["🧠 ML Models"]
+    end
+
+    %% Database Layer
+    subgraph "Database Layer"
+        DB[("🗄️ PostgreSQL")]
+        PROP["🏢 Properties"]
+        VAL["💰 Valuations"]
+        USERS["👥 Users"]
+        IMGS["🖼️ Screenshots"]
+        HIST["📈 Price History"]
+    end
+
+    %% External Services
+    subgraph "External Sources"
+        BDS_WEB["🌐 batdongsan.com.vn"]
+        ALD_WEB["🌐 alonhadat.com.vn"]
+        MAPS["🗺️ Google Maps API"]
+    end
+
+    %% User Interactions
+    UI --> VD
+    UI --> AD
+    UI --> PS
+    UI --> CR
+
+    %% Service Connections
+    VD --> AVM
+    VD --> API
+    PS --> API
+    AD --> AUTH
+    CR --> API
+
+    %% Data Flow
+    AVM --> ML
+    RS --> BDS
+    RS --> ALD
+    BDS --> IMG
+    ALD --> IMG
+
+    %% External Data Sources
+    BDS --> BDS_WEB
+    ALD --> ALD_WEB
+    API --> MAPS
+
+    %% Database Connections
+    AVM --> DB
+    RS --> DB
+    AUTH --> DB
+    ML --> DB
+    IMG --> DB
+
+    %% Database Tables
+    DB --> PROP
+    DB --> VAL
+    DB --> USERS
+    DB --> IMGS
+    DB --> HIST
+
+    %% Styling
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef service fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef processing fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+
+    class UI,VD,AD,PS,CR frontend
+    class AVM,RS,API,AUTH service
+    class BDS,ALD,IMG,ML processing
+    class DB,PROP,VAL,USERS,IMGS,HIST database
+    class BDS_WEB,ALD_WEB,MAPS external
+```
+
+### Mermaid Chart: Luồng Xử lý Định giá (Valuation Flow)
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 User
+    participant VD as 📊 ValuationDashboard
+    participant AVM as 🤖 AVM Service
+    participant DB as 🗄️ Database
+    participant RS as 🕷️ Scraper
+    participant EXT as 🌐 External Sites
+
+    U->>VD: Request Property Valuation
+    VD->>AVM: Process Valuation Request
+    AVM->>DB: Query Similar Properties
+    DB-->>AVM: Return Comparable Data
+    
+    par Parallel Processing
+        AVM->>RS: Trigger Fresh Data Scraping
+        RS->>EXT: Scrape Latest Listings
+        EXT-->>RS: Return Property Data + Screenshots
+        RS->>DB: Store New Data & Screenshots
+    and
+        AVM->>AVM: Run ML Model Prediction
+        AVM->>AVM: Calculate Confidence Score
+    end
+    
+    AVM->>DB: Store Valuation Result
+    AVM-->>VD: Return Valuation + Comparables
+    VD->>VD: Generate Comparison Table
+    VD->>VD: Add External Links & Screenshots
+    VD-->>U: Display Results with Links
+    
+    U->>VD: Request Report Export
+    VD->>VD: Generate PDF/Excel Report
+    VD-->>U: Download Report
+```
+
+### Mermaid Chart: Kiến trúc Thành phần (Component Architecture)
+
+```mermaid
+graph LR
+    subgraph "🖥️ Frontend Components"
+        direction TB
+        VDC["ValuationDashboard.tsx"]
+        ADC["AdminDashboard.tsx"]
+        PSC["PropertySearch.tsx"]
+        CTC["ComparisonTable.tsx"]
+        RGC["ReportGenerator.tsx"]
+    end
+
+    subgraph "🔧 Services"
+        direction TB
+        AVMS["avm.ts"]
+        SS["scraper.ts"]
+        AS["auth.ts"]
+        ES["export.ts"]
+    end
+
+    subgraph "🕷️ Scrapers"
+        direction TB
+        BDSS["bds_scraper.py"]
+        ALDS["alonhadat_scraper.py"]
+        SC["screenshot_capture.py"]
+    end
+
+    subgraph "🗄️ Database Tables"
+        direction TB
+        PT["properties"]
+        VT["valuations"]
+        UT["users"]
+        PST["page_screenshots"]
+        PHT["price_history"]
+    end
+
+    %% Component Relationships
+    VDC --> AVMS
+    VDC --> CTC
+    VDC --> RGC
+    ADC --> AS
+    PSC --> SS
+    CTC --> ES
+
+    %% Service to Scraper
+    AVMS --> BDSS
+    AVMS --> ALDS
+    SS --> BDSS
+    SS --> ALDS
+
+    %% Scraper to Database
+    BDSS --> PT
+    BDSS --> PST
+    ALDS --> PT
+    ALDS --> PST
+    SC --> PST
+
+    %% Service to Database
+    AVMS --> VT
+    AVMS --> PT
+    AS --> UT
+    SS --> PHT
+
+    %% Styling
+    classDef component fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef service fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef scraper fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef table fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+
+    class VDC,ADC,PSC,CTC,RGC component
+    class AVMS,SS,AS,ES service
+    class BDSS,ALDS,SC scraper
+    class PT,VT,UT,PST,PHT table
+```
+
+### Mermaid Chart: Luồng Dữ liệu Screenshot (Screenshot Data Flow)
+
+```mermaid
+flowchart TD
+    START(["🚀 Start Scraping"]) --> SETUP["⚙️ Setup WebDriver"]
+    SETUP --> NAVIGATE["🌐 Navigate to URL"]
+    NAVIGATE --> CAPTURE["📸 Capture Screenshot"]
+    CAPTURE --> SAVE["💾 Save to File System"]
+    SAVE --> METADATA["📝 Generate Metadata"]
+    METADATA --> STORE["🗄️ Store in Database"]
+    STORE --> PARSE["📋 Parse Property Data"]
+    PARSE --> LINK["🔗 Link Screenshot to Property"]
+    LINK --> DISPLAY["🖥️ Display in Comparison Table"]
+    DISPLAY --> EXPORT["📄 Include in Reports"]
+    EXPORT --> END(["✅ Complete"])
+
+    %% Error Handling
+    CAPTURE -.->|"❌ Error"| ERROR["⚠️ Log Error"]
+    ERROR --> CONTINUE["➡️ Continue Next"]
+    CONTINUE --> NAVIGATE
+
+    %% Styling
+    classDef process fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef data fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef start_end fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+
+    class SETUP,NAVIGATE,CAPTURE,SAVE,PARSE,LINK process
+    class METADATA,STORE,DISPLAY,EXPORT data
+    class ERROR,CONTINUE error
+    class START,END start_end
+```
+
+### Tóm tắt Quan hệ Chức năng
+
+#### 1. **Frontend Components**
+- **ValuationDashboard**: Hiển thị kết quả định giá, bảng so sánh với liên kết ngoài và screenshots
+- **AdminDashboard**: Quản lý hệ thống, người dùng, và dữ liệu
+- **PropertySearch**: Tìm kiếm và lọc bất động sản
+- **ComparisonTable**: Hiển thị bảng so sánh với các cột mới (liên kết, screenshots)
+
+#### 2. **Backend Services**
+- **AutomatedValuationModel**: Xử lý định giá AI và tìm BDS tương tự
+- **RealEstateScraper**: Điều phối việc thu thập dữ liệu từ nhiều nguồn
+- **Screenshot Capture**: Chụp và lưu trữ ảnh màn hình các trang web
+
+#### 3. **Database Integration**
+- **page_screenshots**: Bảng mới lưu trữ metadata và đường dẫn screenshots
+- **properties**: Liên kết với screenshots qua property_id
+- **valuations**: Kết quả định giá với tham chiếu đến comparable properties
+
+#### 4. **Data Flow**
+1. **Scraping**: Thu thập dữ liệu + chụp screenshots
+2. **Processing**: Phân tích và định giá
+3. **Display**: Hiển thị kết quả với liên kết và screenshots
+4. **Export**: Tạo báo cáo bao gồm tất cả thông tin
+
+Sơ đồ này thể hiện mối quan hệ chặt chẽ giữa các thành phần trong hệ thống, từ việc thu thập dữ liệu, xử lý, đến hiển thị và xuất báo cáo, đảm bảo tính nhất quán và hiệu quả trong toàn bộ quy trình định giá bất động sản.

@@ -1,0 +1,107 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "BDS Analyzer":
+    - /url: /
+  - navigation:
+    - link "Trang chủ":
+      - /url: /
+    - link "Tìm kiếm":
+      - /url: /search
+    - link "Định giá":
+      - /url: /upload
+    - link "Dashboard":
+      - /url: /valuation
+    - link "Báo cáo":
+      - /url: /reports
+    - link "Quản trị":
+      - /url: /admin
+  - textbox "Tìm kiếm bất động sản..."
+- navigation:
+  - link "Trang chủ":
+    - /url: /
+  - link "Dashboard":
+    - /url: /valuation
+- main:
+  - heading "Dashboard Định giá" [level=1]
+  - paragraph: Quản lý và theo dõi các định giá bất động sản
+  - button "Bộ lọc"
+  - link "Định giá mới":
+    - /url: /upload
+  - navigation:
+    - button "Định giá của tôi"
+    - button "Thị trường"
+  - paragraph: Tổng định giá
+  - paragraph: "3"
+  - paragraph: Hoàn thành
+  - paragraph: "2"
+  - paragraph: Đang xử lý
+  - paragraph: "1"
+  - paragraph: Độ tin cậy TB
+  - paragraph: 88%
+  - heading "Phân bố theo loại BDS" [level=3]
+  - img:
+    - img
+    - img
+    - img
+    - img
+    - img
+    - text: Căn hộ 45% Nhà phố 25% Biệt thự 15% Đất nền 10% Khác 5%
+  - heading "Hiệu suất định giá" [level=3]
+  - text: 98.5% Độ chính xác 2.3 phút Thời gian TB 1,247 Tổng định giá 4.8/5 Đánh giá TB Căn hộ 45% Nhà phố 25% Biệt thự 15% Đất nền 10% Khác 5%
+  - heading "Danh sách định giá" [level=2]
+  - button "Làm mới"
+  - link "Định giá mới":
+    - /url: /upload
+  - table:
+    - rowgroup:
+      - row "Bất động sản Giá ước tính (AI / Trung bình) Độ tin cậy Xu hướng Trạng thái Ngày tạo Thao tác":
+        - cell "Bất động sản"
+        - cell "Giá ước tính (AI / Trung bình)"
+        - cell "Độ tin cậy"
+        - cell "Xu hướng"
+        - cell "Trạng thái"
+        - cell "Ngày tạo"
+        - cell "Thao tác"
+    - rowgroup:
+      - 'row "Căn hộ cao cấp Vinhomes Central Park Quận Bình Thạnh, TP.HCM AI: 5.2 tỷ TB: 5.1 tỷ 8 BDS tương tự 92% +8.5% Hoàn thành 15/1/2024"':
+        - cell "Căn hộ cao cấp Vinhomes Central Park Quận Bình Thạnh, TP.HCM"
+        - 'cell "AI: 5.2 tỷ TB: 5.1 tỷ 8 BDS tương tự"'
+        - cell "92%"
+        - cell "+8.5%"
+        - cell "Hoàn thành"
+        - cell "15/1/2024"
+        - cell:
+          - button "Xem chi tiết so sánh"
+          - button "Tạo báo cáo định giá"
+          - button
+      - 'row "Nhà phố thương mại Phú Mỹ Hưng Quận 7, TP.HCM AI: 12.8 tỷ TB: 12.5 tỷ 6 BDS tương tự 88% +12.3% Hoàn thành 14/1/2024"':
+        - cell "Nhà phố thương mại Phú Mỹ Hưng Quận 7, TP.HCM"
+        - 'cell "AI: 12.8 tỷ TB: 12.5 tỷ 6 BDS tương tự"'
+        - cell "88%"
+        - cell "+12.3%"
+        - cell "Hoàn thành"
+        - cell "14/1/2024"
+        - cell:
+          - button "Xem chi tiết so sánh"
+          - button "Tạo báo cáo định giá"
+          - button
+      - 'row "Chung cư The Manor Mễ Trì Quận Nam Từ Liêm, Hà Nội AI: 3.8 tỷ TB: 3.7 tỷ 7 BDS tương tự 85% +2.1% Đang xử lý 16/1/2024"':
+        - cell "Chung cư The Manor Mễ Trì Quận Nam Từ Liêm, Hà Nội"
+        - 'cell "AI: 3.8 tỷ TB: 3.7 tỷ 7 BDS tương tự"'
+        - cell "85%"
+        - cell "+2.1%"
+        - cell "Đang xử lý"
+        - cell "16/1/2024"
+        - cell:
+          - button "Xem chi tiết so sánh"
+          - button "Tạo báo cáo định giá"
+          - button
+- contentinfo:
+  - paragraph: © 2024 BDS Analyzer. Phân tích bất động sản thông minh.
+- region "Notifications alt+T"
+- button "Open Tanstack query devtools":
+  - img
+- region "Notifications alt+T"
+```

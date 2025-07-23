@@ -1,0 +1,60 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - link "BDS Analyzer":
+    - /url: /
+  - navigation:
+    - link "Trang chủ":
+      - /url: /
+    - link "Tìm kiếm":
+      - /url: /search
+    - link "Định giá":
+      - /url: /upload
+    - link "Dashboard":
+      - /url: /valuation
+    - link "Báo cáo":
+      - /url: /reports
+    - link "Quản trị":
+      - /url: /admin
+  - textbox "Tìm kiếm bất động sản..."
+- navigation:
+  - link "Trang chủ":
+    - /url: /
+- main:
+  - heading "Không thể tải thông tin bất động sản. Vui lòng thử lại sau." [level=2]
+  - link "Quay lại tìm kiếm":
+    - /url: /search
+- contentinfo:
+  - paragraph: © 2024 BDS Analyzer. Phân tích bất động sản thông minh.
+- region "Notifications alt+T":
+  - list:
+    - listitem:
+      - img
+      - text: Không thể tải thông tin bất động sản
+    - listitem:
+      - img
+      - text: Failed to fetch
+    - listitem:
+      - img
+      - text: Không thể tải thông tin bất động sản
+    - listitem:
+      - img
+      - text: Failed to fetch
+- button "Open Tanstack query devtools":
+  - img
+- region "Notifications alt+T":
+  - list:
+    - listitem:
+      - img
+      - text: Không thể tải thông tin bất động sản
+    - listitem:
+      - img
+      - text: Failed to fetch
+    - listitem:
+      - img
+      - text: Không thể tải thông tin bất động sản
+    - listitem:
+      - img
+      - text: Failed to fetch
+```

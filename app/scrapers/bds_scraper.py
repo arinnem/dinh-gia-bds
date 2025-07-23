@@ -8,8 +8,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import time
 import random
+import os
+import uuid
+import base64
 from datetime import datetime
 from typing import List, Optional, Dict, Any
+from pathlib import Path
 
 # from app.schemas.property_schemas import PropertyCreate
 # from app.services.property_service import PropertyService
@@ -19,12 +23,14 @@ BDS_BASE_URL = "https://batdongsan.com.vn"
 # NOTE: robots.txt for batdongsan.com.vn should be checked by the developer.
 # As of previous checks, the site was often under maintenance or had JS challenges for basic tools.
 
-def setup_selenium_driver_bds():
+def setup_selenium_driver_bds(headless: bool = True):
     """Sets up and returns a Selenium WebDriver instance for batdongsan.com.vn."""
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
+    if headless:
+        options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--window-size=1920,1080")  # Set window size for consistent screenshots
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36") # Slightly different UA
     options.add_argument("--disable-blink-features=AutomationControlled") # Try to appear less like a bot
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -39,7 +45,41 @@ def setup_selenium_driver_bds():
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     return driver
 
-def parse_bds_listing_page(html_content: str, url: str) -> Optional[Dict[str, Any]]:
+def capture_page_screenshot(driver, url: str, screenshots_dir: str = "screenshots") -> Optional[Dict[str, Any]]:
+    """Captures a screenshot of the current page and saves it."""
+    try:
+        # Create screenshots directory if it doesn't exist
+        Path(screenshots_dir).mkdir(parents=True, exist_ok=True)
+        
+        # Generate unique filename
+        screenshot_id = str(uuid.uuid4())
+        filename = f"screenshot_{screenshot_id}.png"
+        filepath = os.path.join(screenshots_dir, filename)
+        
+        # Capture screenshot
+        driver.save_screenshot(filepath)
+        
+        # Get file size
+        file_size = os.path.getsize(filepath)
+        
+        screenshot_data = {
+            "screenshot_id": screenshot_id,
+            "screenshot_path": filepath,
+            "screenshot_url": f"/screenshots/{filename}",  # URL path for serving
+            "page_url": url,
+            "file_size": file_size,
+            "image_format": "png",
+            "captured_at": datetime.utcnow()
+        }
+        
+        print(f"Screenshot captured: {filepath} ({file_size} bytes)")
+        return screenshot_data
+        
+    except Exception as e:
+        print(f"Error capturing screenshot for {url}: {e}")
+        return None
+
+def parse_bds_listing_page(html_content: str, url: str, screenshot_data: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
     """
     Parses HTML of a batdongsan.com.vn listing page.
     !!! THIS IS A VERY BASIC PLACEHOLDER - REQUIRES EXTENSIVE WORK AND ACTUAL SELECTORS !!!
@@ -47,6 +87,10 @@ def parse_bds_listing_page(html_content: str, url: str) -> Optional[Dict[str, An
     """
     soup = BeautifulSoup(html_content, 'html.parser')
     data = {"listing_url": url, "data_source_listing": "batdongsan.com.vn", "scraped_at": datetime.utcnow()}
+    
+    # Include screenshot data if available
+    if screenshot_data:
+        data["screenshot_data"] = screenshot_data
     print(f"Parsing (placeholder) BDS URL: {url}")
 
     # --- !!! THESE ARE HIGHLY CONCEPTUAL PLACEHOLDERS - UPDATE WITH ACTUAL SELECTORS !!! ---
@@ -107,8 +151,11 @@ async def scrape_bds_urls(urls_to_scrape: List[str], property_service=None):
                 # )
                 await asyncio.sleep(random.uniform(5, 10)) # Longer, more variable delay
 
+                # Capture screenshot after page loads
+                screenshot_data = capture_page_screenshot(driver, url)
+                
                 page_content = driver.page_source
-                parsed_data = parse_bds_listing_page(page_content, url)
+                parsed_data = parse_bds_listing_page(page_content, url, screenshot_data)
 
                 if parsed_data:
                     scraped_data_list.append(parsed_data)
