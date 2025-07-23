@@ -1,0 +1,41 @@
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "scrape": "ts-node src/index.ts",
+    "scrape:all": "ts-node src/index.ts --all",
+    "scrape:batdongsan": "ts-node src/index.ts --scraper batdongsan",
+    "scrape:nha": "ts-node src/index.ts --scraper nha",
+    "scrape:alonhadat": "ts-node src/index.ts --scraper alonhadat",
+    "test:db": "ts-node src/index.ts --test-db",
+    "list:scrapers": "ts-node src/index.ts --list-scrapers",
+    "clean": "rimraf dist",
+    "test": "ts-node tests/setup.test.ts",
+    "test:setup": "ts-node tests/setup.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@ulixee/hero": "^2.0.0-alpha.33",
+    "@ulixee/hero-playground": "^2.0.0-alpha.33",
+    "dotenv": "^17.2.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/pg": "^8.15.4",
+    "nodemon": "^3.1.10",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
