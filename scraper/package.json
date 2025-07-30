@@ -25,10 +25,15 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@ulixee/hero": "^2.0.0-alpha.33",
+    "@mendable/firecrawl-js": "^1.29.2",
+    "@ulixee/hero-core": "^2.0.0-alpha.33",
     "@ulixee/hero-playground": "^2.0.0-alpha.33",
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
     "dotenv": "^17.2.0",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "playwright": "^1.54.1",
+    "puppeteer": "^24.15.0"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",

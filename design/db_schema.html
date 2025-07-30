@@ -181,7 +181,10 @@
                 { no: 20, name: 'legal_status_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới tình trạng pháp lý.', notes: 'Không bắt buộc.', relation: '`properties.legal_status_id` -> `legal_statuses.id`' },
                 { no: 21, name: 'direction_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới hướng nhà/hướng ban công.', notes: 'Không bắt buộc.', relation: '`properties.direction_id` -> `directions.id`' },
                 { no: 22, name: 'ward_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới phường/xã.', notes: 'Không bắt buộc.', relation: '`properties.ward_id` -> `wards.id`' },
-                { no: 23, name: 'district_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới quận/huyện.', notes: 'Bắt buộc để lọc theo khu vực.', relation: '`properties.district_id` -> `districts.id`' }
+                { no: 23, name: 'district_id', type: 'INT, **FK**', desc: 'Khóa ngoại liên kết tới quận/huyện.', notes: 'Bắt buộc để lọc theo khu vực.', relation: '`properties.district_id` -> `districts.id`' },
+                { no: 24, name: 'province_new', type: 'TEXT', desc: 'New province (post-1/7/2025)', notes: '', relation: '-' },
+                { no: 25, name: 'ward_new', type: 'TEXT', desc: 'New ward (post-1/7/2025)', notes: '', relation: '-' },
+                { no: 26, name: 'street_new', type: 'TEXT', desc: 'New street (post-1/7/2025)', notes: '', relation: '-' }
             ]
         },
         {

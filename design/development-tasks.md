@@ -3,33 +3,26 @@
 ## Overview
 This document outlines the development tasks for implementing the Real Estate Analysis Platform based on the PRD requirements.
 
-## MVP Phase 1: Data Foundation (1-2 months)
+## Phase 1: Data Collection & Foundation (1-2 months)
 
-### Priority 1: Core Backend Infrastructure
+### Priority 1: Data Scraping Infrastructure
 
-#### Task 1.1: Property Search and Listing API (CURRENT TASK)
-**Status:** 🔄 In Progress  
+#### Task 1.1: Hero.js Scraper Setup ✅ COMPLETED
+**Status:** ✅ Completed  
 **Priority:** High  
-**Estimated Time:** 3-5 days  
-**Description:** Implement basic property search and listing functionality as the foundation feature.
+**Estimated Time:** 5-7 days  
+**Description:** Set up Hero.js-based scraping system for Vietnamese real estate websites.
 
 **Requirements:**
-- GET /api/v1/properties - List properties with pagination
-- GET /api/v1/properties/search - Advanced search with filters
-- GET /api/v1/properties/{id} - Get property details
-- Support filters: price range, area, location, property type, bedrooms, bathrooms
-- Implement pagination and sorting
-- Return structured property data with images, location, and basic details
+- Hero.js environment with TypeScript
+- Stealth configurations and anti-detection measures
+- Base scraper framework with error handling
+- Individual scrapers for BatDongSan.com.vn, Nha.com.vn, Alonhadat.com.vn
+- Database integration with property storage
+- Vietnamese market data validation and processing
 
-**Acceptance Criteria:**
-- API endpoints return proper JSON responses
-- Search filters work correctly
-- Pagination handles large datasets efficiently
-- Response time < 500ms for search queries
-- Proper error handling and validation
-
-#### Task 1.2: Database Schema Implementation
-**Status:** ⏳ Pending  
+#### Task 1.2: Database Schema Implementation ✅ COMPLETED
+**Status:** ✅ Completed  
 **Priority:** High  
 **Estimated Time:** 2-3 days  
 **Description:** Set up PostgreSQL database with core tables.
@@ -41,19 +34,36 @@ This document outlines the development tasks for implementing the Real Estate An
 - Database indexes for performance
 - Sample data seeding
 
-#### Task 1.3: Basic Authentication System
-**Status:** ⏳ Pending  
-**Priority:** Medium  
-**Estimated Time:** 2-3 days  
-**Description:** Implement JWT-based authentication.
+#### Task 1.3: Data Collection Pipeline (CURRENT TASK)
+**Status:** 🔄 In Progress  
+**Priority:** High  
+**Estimated Time:** 3-5 days  
+**Description:** Run scrapers and collect real estate data from Vietnamese websites.
 
 **Requirements:**
-- User registration and login
-- JWT token generation and validation
-- Role-based access control (Standard, Professional)
-- Password hashing and security
+- Scrape at least 50 properties from each website
+- Store data in PostgreSQL database
+- Data validation and deduplication
+- Error handling and monitoring
+- Docker integration testing
 
-#### Task 1.4: Property Upload Feature
+### Priority 2: Core API Infrastructure
+
+#### Task 2.1: Property Search and Listing API
+**Status:** ⏳ Pending  
+**Priority:** High  
+**Estimated Time:** 3-5 days  
+**Description:** Implement basic property search and listing functionality.
+
+**Requirements:**
+- GET /api/v1/properties - List properties with pagination
+- GET /api/v1/properties/search - Advanced search with filters
+- GET /api/v1/properties/{id} - Get property details
+- Support filters: price range, area, location, property type, bedrooms, bathrooms
+- Implement pagination and sorting
+- Return structured property data with images, location, and basic details
+
+#### Task 2.2: Property Upload Feature
 **Status:** ⏳ Pending  
 **Priority:** Medium  
 **Estimated Time:** 3-4 days  
@@ -65,9 +75,11 @@ This document outlines the development tasks for implementing the Real Estate An
 - Property data validation
 - Image processing and optimization
 
-### Priority 2: Core Features
+## Phase 2: Intelligence Layer & Analytics (2-3 months)
 
-#### Task 2.1: Basic AVM (Automated Valuation Model)
+### Priority 1: Core Valuation Features
+
+#### Task 3.1: Basic AVM (Automated Valuation Model)
 **Status:** ⏳ Pending  
 **Priority:** High  
 **Estimated Time:** 5-7 days  
@@ -79,7 +91,7 @@ This document outlines the development tasks for implementing the Real Estate An
 - Price estimation with confidence score
 - API endpoint for valuation requests
 
-#### Task 2.2: Property Comparison
+#### Task 3.2: Property Comparison
 **Status:** ⏳ Pending  
 **Priority:** Medium  
 **Estimated Time:** 2-3 days  
@@ -90,7 +102,7 @@ This document outlines the development tasks for implementing the Real Estate An
 - Highlight differences and similarities
 - Export comparison results
 
-#### Task 2.3: Basic Report Generation
+#### Task 3.3: Basic Report Generation
 **Status:** ⏳ Pending  
 **Priority:** Medium  
 **Estimated Time:** 3-4 days  
@@ -102,38 +114,125 @@ This document outlines the development tasks for implementing the Real Estate An
 - Market comparison reports
 - Export to PDF and Excel formats
 
-### Priority 3: Data Collection
+### Priority 2: Advanced Analytics
 
-#### Task 3.1: Web Scraping Infrastructure
+#### Task 4.1: Market Analytics Dashboard
+**Status:** ⏳ Pending  
+**Priority:** Medium  
+**Estimated Time:** 5-7 days  
+**Description:** Create market insights and analytics dashboard.
+
+**Requirements:**
+- Market trend analysis
+- Price movement tracking
+- Location-based statistics
+- Interactive charts and graphs
+
+#### Task 4.2: Enhanced AVM with ML Models
 **Status:** ⏳ Pending  
 **Priority:** Medium  
 **Estimated Time:** 7-10 days  
-**Description:** Set up data collection from real estate websites.
+**Description:** Implement machine learning models for better valuation accuracy.
 
 **Requirements:**
-- Scrapy framework setup
-- Playwright for dynamic content
-- Data cleaning and deduplication
-- Scheduled scraping jobs
-- Error handling and monitoring
+- ML model training pipeline
+- Feature engineering
+- Model validation and testing
+- Continuous learning capabilities
 
-## MVP Phase 2: Intelligence Layer (+2 months)
+## Phase 3: Professional Tools & Features (2-3 months)
 
-### Advanced Features
-- Enhanced AVM with ML models
-- Market analytics dashboard
-- Advanced property similarity matching
-- Image analysis AI
-- Public API development
+### Priority 1: Professional Features
 
-## MVP Phase 3: Professional Tools (+2 months)
+#### Task 5.1: Manual Valuation Tools
+**Status:** ⏳ Pending  
+**Priority:** Medium  
+**Estimated Time:** 5-7 days  
+**Description:** Tools for professional valuers to perform manual assessments.
 
-### Professional Features
-- Manual valuation tools
-- Advanced reporting
-- API integrations
-- Mobile responsiveness
-- User collaboration features
+**Requirements:**
+- Manual valuation forms
+- Professional templates
+- Valuation methodology selection
+- Expert override capabilities
+
+#### Task 5.2: Advanced Reporting
+**Status:** ⏳ Pending  
+**Priority:** Medium  
+**Estimated Time:** 4-5 days  
+**Description:** Enhanced reporting capabilities for professionals.
+
+**Requirements:**
+- Custom report templates
+- Branded reports
+- Batch report generation
+- Report scheduling
+
+#### Task 5.3: API Integrations
+**Status:** ⏳ Pending  
+**Priority:** Medium  
+**Estimated Time:** 3-4 days  
+**Description:** Third-party integrations and public API.
+
+**Requirements:**
+- Public API endpoints
+- API documentation
+- Rate limiting
+- API key management
+
+## Phase 4: User Management & Authentication (Final Phase)
+
+### Priority 1: Authentication System
+
+#### Task 6.1: Basic Authentication System
+**Status:** ⏳ Pending  
+**Priority:** High  
+**Estimated Time:** 2-3 days  
+**Description:** Implement JWT-based authentication.
+
+**Requirements:**
+- User registration and login
+- JWT token generation and validation
+- Password hashing and security
+- Email verification
+
+#### Task 6.2: Role-Based Access Control
+**Status:** ⏳ Pending  
+**Priority:** Medium  
+**Estimated Time:** 2-3 days  
+**Description:** Implement user roles and permissions.
+
+**Requirements:**
+- Role-based access control (Standard, Professional, Admin)
+- Permission management
+- Feature access restrictions
+- Subscription management
+
+#### Task 6.3: User Profile Management
+**Status:** ⏳ Pending  
+**Priority:** Medium  
+**Estimated Time:** 2-3 days  
+**Description:** User profile and account management features.
+
+**Requirements:**
+- User profile pages
+- Account settings
+- Subscription management
+- Usage analytics
+
+### Priority 2: Collaboration Features
+
+#### Task 7.1: User Collaboration
+**Status:** ⏳ Pending  
+**Priority:** Low  
+**Estimated Time:** 3-4 days  
+**Description:** Features for user collaboration and sharing.
+
+**Requirements:**
+- Property sharing
+- Collaborative reports
+- Team workspaces
+- Comment system
 
 ## Technical Requirements
 

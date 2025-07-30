@@ -128,48 +128,27 @@ Units and measures will be Vietnamese based. Decimal numbers will use commas as 
   - 3.1.1.3 Configure CORS, helmet, and security middleware
   - Test: Verify server startup and database connectivity
   - Checkpoint: API foundation ready
-- 3.1.2 Authentication System
-  
-  - 3.1.2.1 Implement JWT-based authentication
-  - 3.1.2.2 Create user registration and login endpoints
-  - 3.1.2.3 Setup role-based authorization middleware
-  - Test: Verify user authentication flow
-  - Checkpoint: Authentication system functional
 ### 3.2 Core API Endpoints
-- 3.2.1 User Management APIs
+- 3.2.1 Property Search APIs
   
-  - 3.2.1.1 POST /api/auth/register - User registration
-  - 3.2.1.2 POST /api/auth/login - User login
-  - 3.2.1.3 GET /api/users/profile - User profile management
-  - Test: Verify user management functionality
-  - Checkpoint: User APIs complete
-- 3.2.2 Property Search APIs
-  
-  - 3.2.2.1 GET /api/properties - Property listing with filters
-  - 3.2.2.2 GET /api/properties/:id - Property details
-  - 3.2.2.3 GET /api/properties/search - Advanced search with geo queries
+  - 3.2.1.1 GET /api/properties - Property listing with filters
+  - 3.2.1.2 GET /api/properties/:id - Property details
+  - 3.2.1.3 GET /api/properties/search - Advanced search with geo queries
   - Test: Verify search functionality and performance
   - Checkpoint: Property search APIs ready
 ### 3.3 Advanced API Features
-- 3.3.1 Favorites and Interactions
+- 3.3.1 Valuation APIs
   
-  - 3.3.1.1 POST /api/favorites - Add property to favorites
-  - 3.3.1.2 GET /api/favorites - Get user favorites
-  - 3.3.1.3 DELETE /api/favorites/:id - Remove from favorites
-  - Test: Verify favorites functionality
-  - Checkpoint: User interaction APIs complete
-- 3.3.2 Valuation APIs
-  
-  - 3.3.2.1 POST /api/valuations - Create manual valuation (professionals only)
-  - 3.3.2.2 GET /api/valuations/:propertyId - Get property valuations
-  - 3.3.2.3 POST /api/estimate - AVM price estimation
+  - 3.3.1.1 POST /api/valuations - Create manual valuation (professionals only)
+  - 3.3.1.2 GET /api/valuations/:propertyId - Get property valuations
+  - 3.3.1.3 POST /api/estimate - AVM price estimation
   - Test: Verify valuation system
   - Checkpoint: Valuation APIs functional
-- 3.3.3 Hero.js Scraper Management APIs
+- 3.3.2 Hero.js Scraper Management APIs
   
-  - 3.3.3.1 GET /api/admin/scraper/status - Monitor Hero.js scraper health
-  - 3.3.3.2 POST /api/admin/scraper/trigger - Manually trigger Hero.js scraping
-  - 3.3.3.3 GET /api/admin/scraper/logs - View Hero.js scraping logs
+  - 3.3.2.1 GET /api/admin/scraper/status - Monitor Hero.js scraper health
+  - 3.3.2.2 POST /api/admin/scraper/trigger - Manually trigger Hero.js scraping
+  - 3.3.2.3 GET /api/admin/scraper/logs - View Hero.js scraping logs
   - Test: Verify scraper management functionality
   - Checkpoint: Hero.js management APIs ready
 ## Phase 4: AVM Implementation (Weeks 7-8)
@@ -235,18 +214,11 @@ Units and measures will be Vietnamese based. Decimal numbers will use commas as 
   - Test: Verify component reusability and responsiveness
   - Checkpoint: UI component library ready
 ### 5.2 Core Pages Development
-- 5.2.1 Authentication Pages
+- 5.2.1 Property Listing Pages
   
-  - 5.2.1.1 Create login page with form validation
-  - 5.2.1.2 Create registration page with role selection
-  - 5.2.1.3 Implement protected route wrapper
-  - Test: Verify authentication flow
-  - Checkpoint: Authentication UI complete
-- 5.2.2 Property Listing Pages
-  
-  - 5.2.2.1 Create property search page with filters
-  - 5.2.2.2 Implement property card components
-  - 5.2.2.3 Add pagination and infinite scroll
+  - 5.2.1.1 Create property search page with filters
+  - 5.2.1.2 Implement property card components
+  - 5.2.1.3 Add pagination and infinite scroll
   - Test: Verify property browsing experience
   - Checkpoint: Property listing functionality ready
 ### 5.3 Advanced Features
@@ -257,33 +229,26 @@ Units and measures will be Vietnamese based. Decimal numbers will use commas as 
   - 5.3.1.3 Implement image gallery with lightbox
   - Test: Verify property details display
   - Checkpoint: Property details page complete
-- 5.3.2 User Dashboard
+### 5.2 Professional Features
+- 5.2.1 Valuation Tools
   
-  - 5.3.2.1 Create user profile management page
-  - 5.3.2.2 Implement favorites list with management
-  - 5.3.2.3 Add estimation history for logged users
-  - Test: Verify user dashboard functionality
-  - Checkpoint: User dashboard ready
-### 5.4 Professional Features
-- 5.4.1 Valuation Tools
-  
-  - 5.4.1.1 Create AVM estimation form
-  - 5.4.1.2 Implement manual valuation form (professionals)
-  - 5.4.1.3 Add property comparison tool
+  - 5.2.1.1 Create AVM estimation form
+  - 5.2.1.2 Implement manual valuation form (professionals)
+  - 5.2.1.3 Add property comparison tool
   - Test: Verify valuation tools functionality
   - Checkpoint: Valuation features complete
-- 5.4.2 Analytics Dashboard
+- 5.2.2 Analytics Dashboard
   
-  - 5.4.2.1 Create market analytics charts
-  - 5.4.2.2 Implement price trend visualizations
-  - 5.4.2.3 Add export functionality for reports
+  - 5.2.2.1 Create market analytics charts
+  - 5.2.2.2 Implement price trend visualizations
+  - 5.2.2.3 Add export functionality for reports
   - Test: Verify analytics and export features
   - Checkpoint: Analytics dashboard ready
-- 5.4.3 Hero.js Scraper Monitoring UI
+- 5.2.3 Hero.js Scraper Monitoring UI
   
-  - 5.4.3.1 Create scraper status dashboard for admins
-  - 5.4.3.2 Implement real-time scraping progress visualization
-  - 5.4.3.3 Add scraper configuration and control panel
+  - 5.2.3.1 Create scraper status dashboard for admins
+  - 5.2.3.2 Implement real-time scraping progress visualization
+  - 5.2.3.3 Add scraper configuration and control panel
   - Test: Verify scraper monitoring interface
   - Checkpoint: Hero.js monitoring UI complete
 ## Phase 6: Integration and Testing (Weeks 12-13)
@@ -346,6 +311,59 @@ Units and measures will be Vietnamese based. Decimal numbers will use commas as 
   - 6.3.3.3 Validate Hero.js scraper data quality and completeness
   - Test: Meet all acceptance criteria
   - Checkpoint: System ready for production deployment
+## Phase 7: Authentication and User Management (Weeks 14-15)
+### 7.1 Backend Authentication System
+- 7.1.1 Authentication Infrastructure
+  
+  - 7.1.1.1 Implement JWT-based authentication
+  - 7.1.1.2 Create user registration and login endpoints
+  - 7.1.1.3 Setup role-based authorization middleware
+  - Test: Verify user authentication flow
+  - Checkpoint: Authentication system functional
+- 7.1.2 User Management APIs
+  
+  - 7.1.2.1 POST /api/auth/register - User registration
+  - 7.1.2.2 POST /api/auth/login - User login
+  - 7.1.2.3 GET /api/users/profile - User profile management
+  - Test: Verify user management functionality
+  - Checkpoint: User APIs complete
+- 7.1.3 User Interaction APIs
+  
+  - 7.1.3.1 POST /api/favorites - Add property to favorites
+  - 7.1.3.2 GET /api/favorites - Get user favorites
+  - 7.1.3.3 DELETE /api/favorites/:id - Remove from favorites
+  - Test: Verify favorites functionality
+  - Checkpoint: User interaction APIs complete
+### 7.2 Frontend Authentication Integration
+- 7.2.1 Authentication Pages
+  
+  - 7.2.1.1 Create login page with form validation
+  - 7.2.1.2 Create registration page with role selection
+  - 7.2.1.3 Implement protected route wrapper
+  - Test: Verify authentication flow
+  - Checkpoint: Authentication UI complete
+- 7.2.2 User Dashboard
+  
+  - 7.2.2.1 Create user profile management page
+  - 7.2.2.2 Implement favorites list with management
+  - 7.2.2.3 Add estimation history for logged users
+  - Test: Verify user dashboard functionality
+  - Checkpoint: User dashboard ready
+### 7.3 Authentication Integration and Testing
+- 7.3.1 Full System Integration
+  
+  - 7.3.1.1 Integrate authentication with existing property features
+  - 7.3.1.2 Update API endpoints to support authenticated users
+  - 7.3.1.3 Implement session management and token refresh
+  - Test: Verify seamless integration with existing features
+  - Checkpoint: Authentication fully integrated
+- 7.3.2 Security and Performance
+  
+  - 7.3.2.1 Implement security best practices (password hashing, rate limiting)
+  - 7.3.2.2 Add user data validation and sanitization
+  - 7.3.2.3 Optimize authentication performance
+  - Test: Verify security measures and performance
+  - Checkpoint: Authentication system production-ready
 ## Final Deliverables
 - ✅ Complete database schema with 100+ property listings
 - ✅ Hero.js-powered multi-source scraper collecting Vietnamese real estate data

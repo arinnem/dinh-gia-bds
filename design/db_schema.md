@@ -336,3 +336,23 @@
 | 2   | `name`                  | `VARCHAR(100)`      | Tên chính thức của Phường hoặc Xã. |  | - |
 | 3   | `district_id`           | `INT, FK`           | Khóa ngoại liên kết tới Quận/Huyện mà Phường/Xã này thuộc về. | Bắt buộc. | wards.district_id -> districts.id |
 
+# Address Normalization and Conversion (2025+)
+
+## Database Changes
+- Existing columns: `province`, `district`, `ward`, `street`, ... (current structure)
+- New columns (for post-1/7/2025 structure):
+  - `province_new` (TEXT, nullable)
+  - `ward_new` (TEXT, nullable)
+  - `street_new` (TEXT, nullable)
+
+## Workflow
+1. Extract address compartments (ward, district, province, street) using regex and/or Firecrawl AI.
+2. If any compartment is missing or ambiguous:
+   - Use tinhthanhpho.com API to look up missing info by ward/district/province name.
+   - Fill in missing address fields.
+3. Call `/api/v1/convert/address` with the codes to get the new address structure.
+4. Insert all address fields (current and new) into the DB.
+
+## API Reference
+- [TinhThanhPho.com API Docs](https://tinhthanhpho.com/api-docs#introduction)
+

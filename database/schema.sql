@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS user_favorites CASCADE;
 DROP TABLE IF EXISTS valuations CASCADE;
 DROP TABLE IF EXISTS property_images CASCADE;
 DROP TABLE IF EXISTS price_history CASCADE;
+DROP TABLE IF EXISTS page_screenshots CASCADE;
 DROP TABLE IF EXISTS properties CASCADE;
 DROP TABLE IF EXISTS projects CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -20,6 +21,7 @@ DROP TABLE IF EXISTS districts CASCADE;
 DROP TABLE IF EXISTS directions CASCADE;
 DROP TABLE IF EXISTS legal_statuses CASCADE;
 DROP TABLE IF EXISTS property_types CASCADE;
+DROP TABLE IF EXISTS provinces CASCADE;
 
 -- Create lookup tables first
 
@@ -41,17 +43,29 @@ CREATE TABLE directions (
     name VARCHAR(50) UNIQUE NOT NULL
 );
 
+-- 0. Provinces
+CREATE TABLE provinces (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(10) UNIQUE NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
+    type VARCHAR(50) NOT NULL
+);
+
 -- 4. Districts
 CREATE TABLE districts (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) UNIQUE NOT NULL,
-    province VARCHAR(100) NOT NULL
+    code VARCHAR(10) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    province_id INT NOT NULL REFERENCES provinces(id) ON DELETE CASCADE
 );
 
 -- 5. Wards
 CREATE TABLE wards (
     id SERIAL PRIMARY KEY,
+    code VARCHAR(10) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
+    type VARCHAR(50) NOT NULL,
     district_id INT NOT NULL REFERENCES districts(id) ON DELETE CASCADE
 );
 
@@ -113,7 +127,10 @@ CREATE TABLE properties (
     legal_status_id INT REFERENCES legal_statuses(id),
     direction_id INT REFERENCES directions(id),
     ward_id INT REFERENCES wards(id),
-    district_id INT NOT NULL REFERENCES districts(id)
+    district_id INT REFERENCES districts(id),
+    province_new TEXT,
+    ward_new TEXT,
+    street_new TEXT
 );
 
 -- 10. Price History

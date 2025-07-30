@@ -51,6 +51,9 @@ export interface ScrapedProperty {
   hash: string;
   postedDate?: Date;
   projectName?: string;
+  province_new?: string;
+  ward_new?: string;
+  street_new?: string;
 }
 
 export interface ScraperConfig {
@@ -95,6 +98,9 @@ export interface DatabaseProperty {
   posted_date?: Date;
   created_at?: Date;
   updated_at?: Date;
+  province_new?: string;
+  ward_new?: string;
+  street_new?: string;
 }
 
 export interface ScrapingSession {
