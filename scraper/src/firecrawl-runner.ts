@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: __dirname + '/../.env' });
 import { FirecrawlBatdongsanScraper } from './firecrawlBatdongsanScraper';
 
 console.log('[Runner] firecrawl-runner.ts starting...');

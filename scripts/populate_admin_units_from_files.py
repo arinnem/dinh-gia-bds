@@ -7,12 +7,12 @@ import logging
 # Load environment variables
 load_dotenv()
 
-# Configure logging
+# Configure logging with UTF-8 encoding
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('admin_units_population.log'),
+        logging.FileHandler('admin_units_population.log', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -171,31 +171,53 @@ def insert_new_structure_data(conn, provinces, wards):
         province_insert_query = """
             INSERT INTO provinces_new (code, name, type) 
             VALUES (%s, %s, %s)
-            ON CONFLICT (code) DO UPDATE SET 
-                name = EXCLUDED.name,
-                type = EXCLUDED.type
+            ON CONFLICT (code) DO NOTHING
             RETURNING id, code
         """
         
         province_id_map = {}
         for province in provinces:
-            cursor.execute(province_insert_query, (
-                province['code'],
-                province['name'],
-                province['type']
-            ))
-            result = cursor.fetchone()
-            province_id_map[province['code']] = result[0]
-            logger.info(f"Inserted new province: {province['name']} (Code: {province['code']})")
+            try:
+                cursor.execute(province_insert_query, (
+                    province['code'],
+                    province['name'],
+                    province['type']
+                ))
+                result = cursor.fetchone()
+                if result:
+                    province_id_map[province['code']] = result[0]
+                    logger.info(f"Inserted new province: {province['name']} (Code: {province['code']})")
+                else:
+                    # Province already exists, get its ID
+                    cursor.execute("SELECT id FROM provinces_new WHERE code = %s", (province['code'],))
+                    result = cursor.fetchone()
+                    if result:
+                        province_id_map[province['code']] = result[0]
+                        logger.info(f"Province {province['name']} (Code: {province['code']}) already exists")
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                if "duplicate key value violates unique constraint" in str(e):
+                    logger.warning(f"Skipping duplicate province: {province['name']} (Code: {province['code']})")
+                    # Try to get the existing province ID
+                    try:
+                        cursor.execute("SELECT id FROM provinces_new WHERE name = %s OR code = %s", 
+                                     (province['name'], province['code']))
+                        result = cursor.fetchone()
+                        if result:
+                            province_id_map[province['code']] = result[0]
+                        conn.commit()
+                    except Exception as e2:
+                        conn.rollback()
+                        logger.error(f"Error getting existing province ID: {e2}")
+                else:
+                    raise
         
         # Insert wards
         ward_insert_query = """
             INSERT INTO wards_new (code, name, type, province_id) 
             VALUES (%s, %s, %s, %s)
-            ON CONFLICT (code) DO UPDATE SET 
-                name = EXCLUDED.name,
-                type = EXCLUDED.type,
-                province_id = EXCLUDED.province_id
+            ON CONFLICT (code) DO NOTHING
         """
         
         ward_count = 0
@@ -235,31 +257,53 @@ def insert_old_structure_data(conn, provinces, districts, wards):
         province_insert_query = """
             INSERT INTO provinces (code, name, type) 
             VALUES (%s, %s, %s)
-            ON CONFLICT (code) DO UPDATE SET 
-                name = EXCLUDED.name,
-                type = EXCLUDED.type
+            ON CONFLICT (code) DO NOTHING
             RETURNING id, code
         """
         
         province_id_map = {}
         for province in provinces:
-            cursor.execute(province_insert_query, (
-                province['code'],
-                province['name'],
-                province['type']
-            ))
-            result = cursor.fetchone()
-            province_id_map[province['code']] = result[0]
-            logger.info(f"Inserted old province: {province['name']} (Code: {province['code']})")
+            try:
+                cursor.execute(province_insert_query, (
+                    province['code'],
+                    province['name'],
+                    province['type']
+                ))
+                result = cursor.fetchone()
+                if result:
+                    province_id_map[province['code']] = result[0]
+                    logger.info(f"Inserted old province: {province['name']} (Code: {province['code']})")
+                else:
+                    # Province already exists, get its ID
+                    cursor.execute("SELECT id FROM provinces WHERE code = %s", (province['code'],))
+                    result = cursor.fetchone()
+                    if result:
+                        province_id_map[province['code']] = result[0]
+                        logger.info(f"Province {province['name']} (Code: {province['code']}) already exists")
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                if "duplicate key value violates unique constraint" in str(e):
+                    logger.warning(f"Skipping duplicate province: {province['name']} (Code: {province['code']})")
+                    # Try to get the existing province ID
+                    try:
+                        cursor.execute("SELECT id FROM provinces WHERE name = %s OR code = %s", 
+                                     (province['name'], province['code']))
+                        result = cursor.fetchone()
+                        if result:
+                            province_id_map[province['code']] = result[0]
+                        conn.commit()
+                    except Exception as e2:
+                        conn.rollback()
+                        logger.error(f"Error getting existing province ID: {e2}")
+                else:
+                    raise
         
         # Insert districts
         district_insert_query = """
             INSERT INTO districts (code, name, type, province_id) 
             VALUES (%s, %s, %s, %s)
-            ON CONFLICT (code) DO UPDATE SET 
-                name = EXCLUDED.name,
-                type = EXCLUDED.type,
-                province_id = EXCLUDED.province_id
+            ON CONFLICT (code) DO NOTHING
             RETURNING id, code
         """
         
@@ -283,10 +327,8 @@ def insert_old_structure_data(conn, provinces, districts, wards):
         ward_insert_query = """
             INSERT INTO wards (code, name, type, district_id) 
             VALUES (%s, %s, %s, %s)
-            ON CONFLICT (code) DO UPDATE SET 
-                name = EXCLUDED.name,
-                type = EXCLUDED.type,
-                district_id = EXCLUDED.district_id
+            ON CONFLICT (code) DO NOTHING
+            RETURNING id, code
         """
         
         ward_count = 0
@@ -298,6 +340,7 @@ def insert_old_structure_data(conn, provinces, districts, wards):
                     ward['type'],
                     district_id_map[ward['district_code']]
                 ))
+                result = cursor.fetchone()
                 ward_count += 1
             else:
                 logger.warning(f"District code {ward['district_code']} not found for ward {ward['name']}")

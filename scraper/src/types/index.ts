@@ -2,72 +2,69 @@
 
 export interface ScrapedProperty {
   title: string;
-  description?: string;
+  description: string;
   price: {
     amount: number;
     currency: string;
     unit: string;
     negotiable?: boolean;
   };
-  address: {
-    full: string;
-    street?: string;
-    ward?: string;
-    district?: string;
-    city?: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
-    } | null;
-  };
   area: {
     total: number;
-    usable?: number | null;
     unit: string;
   };
-  propertyType: string;
-  legalStatus?: string;
-  direction?: string;
   features: {
-    bedrooms?: number | null;
-    bathrooms?: number | null;
-    floors?: number | null;
-    parking?: boolean;
-    balcony?: boolean;
-    garden?: boolean;
-    elevator?: boolean;
-    security?: boolean;
-    furnished?: boolean;
+    bedrooms: number | null;
+    bathrooms: number | null;
+    floors: number | null;
   };
+  address: {
+    full: string;
+    province: string;
+    ward: string;
+    district: string;
+    coordinates: {
+      lat: number | null;
+      lng: number | null;
+    };
+  };
+  propertyType: string;
+  legalStatus: string;
+  direction: string;
+  projectName: string;
   images: string[];
   contact: {
-    name?: string;
-    phone?: string;
-    email?: string | null;
+    name: string;
+    phone: string;
+    email: string;
   };
   url: string;
   source: string;
-  scrapedAt: Date;
+  scrapedAt: string;
+  postedDate?: string;
   hash: string;
-  postedDate?: Date;
-  projectName?: string;
+  // Address normalization fields
   province_new?: string;
   ward_new?: string;
   street_new?: string;
+  province_id?: number | null;
+  district_id?: number | null;
+  ward_id?: number | null;
+  // NEW: Address conversion fields
+  is_converted?: boolean;
+  original_address?: string;
+  converted_address?: string;
+  conversion_error?: string;
 }
 
 export interface ScraperConfig {
-  baseUrl: string;
-  name: string;
-  delayMin: number;
-  delayMax: number;
-  timeout: number;
-  retries: number;
-  maxPages?: number;
-  maxProperties?: number;
+  maxProperties: number;
+  maxPages: number;
+  debug: boolean;
+  startUrls: string[];
 }
 
-export interface ScraperResult {
+export interface ScrapingResult {
   success: boolean;
   propertiesScraped: number;
   errors: string[];
@@ -76,31 +73,39 @@ export interface ScraperResult {
 }
 
 export interface DatabaseProperty {
-  id?: number;
-  title: string;
-  description?: string;
-  price: number;
-  area: number;
-  bedrooms?: number;
-  bathrooms?: number;
-  address: string;
-  district_id?: number;
-  ward_id?: number;
-  property_type_id: number;
-  legal_status_id?: number;
-  direction_id?: number;
-  project_id?: number;
-  location?: string; // PostGIS geometry
+  id: string;
   source_url: string;
   source_site: string;
-  contact_phone?: string;
-  contact_name?: string;
-  posted_date?: Date;
-  created_at?: Date;
-  updated_at?: Date;
-  province_new?: string;
-  ward_new?: string;
-  street_new?: string;
+  title: string;
+  description: string;
+  price: number;
+  price_per_sqm: number | null;
+  area: number;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  floors: number | null;
+  frontage: number | null;
+  full_address: string;
+  location: any;
+  additional_features: any;
+  avm_estimate: number | null;
+  published_at: Date | null;
+  last_scraped_at: Date;
+  project_id: string | null;
+  property_type_id: number;
+  legal_status_id: number | null;
+  direction_id: number | null;
+  ward_id: number | null;
+  district_id: number | null;
+  province_new: string | null;
+  ward_new: string | null;
+  street_new: string | null;
+  // NEW: Address conversion fields
+  is_address_converted: boolean;
+  original_address: string | null;
+  converted_address: string | null;
+  conversion_error: string | null;
+  address_conversion_date: Date | null;
 }
 
 export interface ScrapingSession {

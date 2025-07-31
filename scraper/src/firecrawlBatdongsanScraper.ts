@@ -8,6 +8,7 @@ import axios from 'axios';
 import * as dotenv from 'dotenv';
 import * as https from 'https';
 import { normalizeAddress } from './utils/addressNormalizer';
+import { convertAddressIfNeeded } from './utils/addressConverter';
 dotenv.config();
 
 const app = new FirecrawlApp({
@@ -88,7 +89,7 @@ export class FirecrawlBatdongsanScraper extends FirecrawlBaseScraper {
     const log = (...args: any[]) => { if (this.config.debug) console.log('[Firecrawl][Batdongsan]', ...args); };
     const propertyService = new PropertyService();
 
-    // 1. Pagination loop
+    // 1. Pagination loop to collect all property URLs
     while (currentPageUrl && pageCount < maxPages && allPropertyUrls.size < maxProperties) {
       log(`Scraping page: ${currentPageUrl}`);
       const pageData = await this.firecrawlScrape(currentPageUrl);
@@ -96,6 +97,7 @@ export class FirecrawlBatdongsanScraper extends FirecrawlBaseScraper {
       const propertyUrls = await this.extractPropertyUrls(html, currentPageUrl);
       propertyUrls.forEach(url => allPropertyUrls.add(url));
       log(`Found ${propertyUrls.length} property URLs on page ${pageCount + 1}`);
+      
       // Find next page URL
       const nextPageUrl = this.extractNextPageUrl(html, currentPageUrl);
       if (!nextPageUrl) break;
@@ -105,110 +107,52 @@ export class FirecrawlBatdongsanScraper extends FirecrawlBaseScraper {
     }
     log(`Total unique property URLs found: ${allPropertyUrls.size}`);
 
-    // 2. Extract property data using Firecrawl extract
+    // 2. Process each property URL
     const results: any[] = [];
     let inserted = 0;
+    let updated = 0;
+    
     for (const url of Array.from(allPropertyUrls).slice(0, maxProperties)) {
       try {
-        log(`Extracting property data from: ${url}`);
-        // 1. Scrape the property page HTML
-        const pageHtmlData = await this.firecrawlScrape(url);
-        const html = pageHtmlData?.data?.html || '';
-        const $ = cheerio.load(html);
-        if (this.config.debug) {
-          console.log('[DEBUG][Address Extraction] Raw HTML length:', html.length);
-          console.log('[DEBUG][Address Extraction] .js__pr-address:', $(".js__pr-address").text());
-          console.log('[DEBUG][Address Extraction] #product-detail-web > span:', $("#product-detail-web > span").text());
-        }
-        // 2. Extract address string using robust selector
-        const addressString = $(".js__pr-address").text().trim() || $("#product-detail-web > span").text().trim();
-        if (this.config.debug) {
-          console.log('[DEBUG][Address Extraction] Final addressString:', addressString);
-        }
-        // Split-based extraction for Vietnamese address format
-        const addressParts = addressString.split(',').map(part => part.trim());
-        const provinceNameSplit = addressParts[addressParts.length - 1] || '';
-        const districtNameSplit = addressParts.length > 1 ? addressParts[addressParts.length - 2] : '';
-        const wardNameSplit = addressParts.length > 2 ? addressParts[addressParts.length - 3] : '';
-        const streetNameSplit = addressParts.length > 3 ? addressParts[addressParts.length - 4] : '';
-        let projectNameSplit = addressParts.length > 4 ? addressParts.slice(0, addressParts.length - 4).join(', ') : '';
-        // If the first compartment is not a recognized address unit, treat as project name
-        const recognizedUnits = /^(Phường|Xã|Thị trấn|Quận|Huyện|Thành phố|Thị xã|Đường|Phố)/i;
-        if (addressParts[0] && !recognizedUnits.test(addressParts[0])) {
-          projectNameSplit = addressParts[0];
-        }
-        if (this.config.debug) {
-          console.log('[DEBUG][Address Extraction][Split] projectName:', projectNameSplit);
-          console.log('[DEBUG][Address Extraction][Split] wardName:', wardNameSplit);
-          console.log('[DEBUG][Address Extraction][Split] districtName:', districtNameSplit);
-          console.log('[DEBUG][Address Extraction][Split] provinceName:', provinceNameSplit);
-          console.log('[DEBUG][Address Extraction][Split] streetName:', streetNameSplit);
-        }
-        // Use split-based values for main logic
-        let provinceName = provinceNameSplit;
-        let districtName = districtNameSplit;
-        let wardName = wardNameSplit;
-        let streetName = streetNameSplit;
-        let projectName = projectNameSplit;
-        // 4.1. Use API for reference to get codes for province, district, ward
-        // REMOVE ALL API CALLS - use DB lookup instead
-        let normalizedAddress;
-        try {
-          normalizedAddress = await normalizeAddress({
-            province: provinceName,
-            district: districtName,
-            ward: wardName,
-            street: streetName,
-            project: projectName
-          });
-          if (this.config.debug) {
-            console.log('[DEBUG][Normalized Address]', normalizedAddress);
-          }
-        } catch (err) {
-          log('Error normalizing address using DB:', err);
-          normalizedAddress = {
-            province_id: null, province_name: provinceName,
-            district_id: null, district_name: districtName,
-            ward_id: null, ward_name: wardName,
-            street: streetName, project: projectName
-          };
-        }
-        // 5. Now call Firecrawl AI extract for other fields (not address)
-        const extractionPrompt = `Extract the following fields as JSON. If a field is missing, use an empty string, null, or a reasonable default. \n\n{\n  "title": "string",\n  "description": "string",\n  "price": { "amount": "number", "currency": "string", "unit": "string", "negotiable": "boolean" },\n  "area": { "total": "number", "unit": "string" },\n  "features": { "bedrooms": "number|null", "bathrooms": "number|null", "floors": "number|null" },\n  "propertyType": "string",\n  "legalStatus": "string",\n  "direction": "string",\n  "projectName": "string",\n  "images": ["string"],\n  "contact": { "name": "string", "phone": "string", "email": "string" },\n  "url": "string",\n  "source": "string",\n  "scrapedAt": "string",\n  "postedDate": "string"\n}`;
-        const scrapeResult = await app.extract([url], { prompt: extractionPrompt });
-        if (!scrapeResult.success) {
-          log(`Failed to extract: ${scrapeResult.error}`);
+        log(`Processing property: ${url}`);
+        
+        // STEP 1: Extract basic property data
+        const propertyData = await this.extractBasicPropertyData(url);
+        if (!propertyData) {
+          log(`Failed to extract basic data from: ${url}`);
           continue;
         }
-        let property = scrapeResult.data;
-        // Validate and normalize
-        property = toCanonicalScrapedProperty(property);
-        // Overwrite address fields with normalized values if present, otherwise keep AI extract
-        property.address = {
-          full: addressString || property.address?.full || '',
-          province: normalizedAddress.province_name || property.address?.province || '',
-          ward: normalizedAddress.ward_name || property.address?.ward || '',
-          district: normalizedAddress.district_name || property.address?.district || '',
-          coordinates: property.address?.coordinates || { lat: null, lng: null }
-        };
-        // 6. Store normalized names and IDs for DB
-        property.province_new = normalizedAddress.province_name;
-        property.ward_new = normalizedAddress.ward_name;
-        property.street_new = normalizedAddress.street;
-        property.province_id = normalizedAddress.province_id;
-        property.district_id = normalizedAddress.district_id;
-        property.ward_id = normalizedAddress.ward_id;
-        property.projectName = normalizedAddress.project;
-        // Insert into DB
-        await propertyService.insertProperty(property);
-        results.push(property);
-        inserted++;
-        log(`Inserted property: ${property.title} (${url})`);
+
+        // STEP 2: Insert property immediately with basic info
+        let propertyId;
+        try {
+          propertyId = await propertyService.insertProperty(propertyData);
+          if (!propertyId) {
+            log(`✗ Failed to insert property: ${propertyData.title}`);
+            continue;
+          }
+          log(`✓ Inserted property with basic info: ${propertyData.title} (ID: ${propertyId})`);
+          inserted++;
+        } catch (err) {
+          log(`✗ Error inserting property: ${err}`);
+          continue;
+        }
+
+        // STEP 3: Try address conversion and update if successful
+        try {
+          await this.processAddressConversion(propertyId, propertyData.address.full, propertyService);
+          updated++;
+        } catch (err) {
+          log(`✗ Error during address conversion for property ${propertyId}: ${err}`);
+        }
+
+        results.push(propertyData);
       } catch (err) {
-        log(`Error scraping property ${url}:`, err);
+        log(`✗ Error processing property ${url}:`, err);
       }
     }
-    log(`Inserted ${inserted} properties into the database.`);
+    
+    log(`✓ Inserted ${inserted} properties, updated ${updated} with address conversion`);
     return results;
   }
 
@@ -259,5 +203,177 @@ export class FirecrawlBatdongsanScraper extends FirecrawlBaseScraper {
 
   protected async extractPropertyDataFromPage(): Promise<any> {
     return null;
+  }
+
+  private async extractBasicPropertyData(url: string): Promise<any> {
+    const log = (...args: any[]) => { if (this.config.debug) console.log('[ExtractBasic]', ...args); };
+    
+    try {
+      // 1. Scrape the property page HTML
+      const pageHtmlData = await this.firecrawlScrape(url);
+      const html = pageHtmlData?.data?.html || '';
+      const $ = cheerio.load(html);
+      
+      // 2. Extract address string
+      const addressString = $(".js__pr-address").text().trim() || $("#product-detail-web > span").text().trim();
+      log(`Extracted address: ${addressString}`);
+      
+      // 3. Parse address components
+      const addressComponents = this.parseAddressComponents(addressString);
+      
+      // 4. Extract other property data using Firecrawl AI
+      const extractionPrompt = `Extract the following fields as JSON. If a field is missing, use an empty string, null, or a reasonable default. \n\n{\n  "title": "string",\n  "description": "string",\n  "price": { "amount": "number", "currency": "string", "unit": "string", "negotiable": "boolean" },\n  "area": { "total": "number", "unit": "string" },\n  "features": { "bedrooms": "number|null", "bathrooms": "number|null", "floors": "number|null" },\n  "propertyType": "string",\n  "legalStatus": "string",\n  "direction": "string",\n  "projectName": "string",\n  "images": ["string"],\n  "contact": { "name": "string", "phone": "string", "email": "string" },\n  "url": "string",\n  "source": "string",\n  "scrapedAt": "string",\n  "postedDate": "string"\n}`;
+      
+      const scrapeResult = await app.extract([url], { prompt: extractionPrompt });
+      if (!scrapeResult.success) {
+        log(`Failed to extract property data: ${scrapeResult.error}`);
+        return null;
+      }
+      
+      let property = scrapeResult.data;
+      property = toCanonicalScrapedProperty(property);
+      
+      // 5. Set up basic address structure
+      property.address = {
+        full: addressString || property.address?.full || '',
+        province: addressComponents.province || property.address?.province || '',
+        ward: addressComponents.ward || property.address?.ward || '',
+        district: addressComponents.district || property.address?.district || '',
+        coordinates: property.address?.coordinates || { lat: null, lng: null }
+      };
+      
+      // 6. Basic address normalization
+      const basicNormalizedAddress = await this.normalizeBasicAddress(addressComponents);
+      
+      // 7. Set normalized fields
+      property.province_new = basicNormalizedAddress.province_name;
+      property.ward_new = basicNormalizedAddress.ward_name;
+      property.street_new = basicNormalizedAddress.street;
+      property.province_id = basicNormalizedAddress.province_id;
+      property.district_id = basicNormalizedAddress.district_id;
+      property.ward_id = basicNormalizedAddress.ward_id;
+      property.projectName = basicNormalizedAddress.project;
+      
+      // 8. Set conversion status fields
+      property.is_converted = false;
+      property.original_address = addressString;
+      property.converted_address = null;
+      property.conversion_error = null;
+      property.address_conversion_date = null;
+      
+      return property;
+    } catch (err) {
+      log(`Error extracting basic property data: ${err}`);
+      return null;
+    }
+  }
+
+  private parseAddressComponents(addressString: string): any {
+    const addressParts = addressString.split(',').map(part => part.trim());
+    const provinceName = addressParts[addressParts.length - 1] || '';
+    const districtName = addressParts.length > 1 ? addressParts[addressParts.length - 2] : '';
+    const wardName = addressParts.length > 2 ? addressParts[addressParts.length - 3] : '';
+    const streetName = addressParts.length > 3 ? addressParts[addressParts.length - 4] : '';
+    let projectName = addressParts.length > 4 ? addressParts.slice(0, addressParts.length - 4).join(', ') : '';
+    
+    // If the first compartment is not a recognized address unit, treat as project name
+    const recognizedUnits = /^(Phường|Xã|Thị trấn|Quận|Huyện|Thành phố|Thị xã|Đường|Phố)/i;
+    if (addressParts[0] && !recognizedUnits.test(addressParts[0])) {
+      projectName = addressParts[0];
+    }
+    
+    return {
+      province: provinceName,
+      district: districtName,
+      ward: wardName,
+      street: streetName,
+      project: projectName
+    };
+  }
+
+  private async normalizeBasicAddress(addressComponents: any): Promise<any> {
+    try {
+      return await normalizeAddress({
+        province: addressComponents.province,
+        district: addressComponents.district,
+        ward: addressComponents.ward,
+        street: addressComponents.street,
+        project: addressComponents.project
+      });
+    } catch (err) {
+      console.log('Error in basic address normalization:', err);
+      return {
+        province_id: null, province_name: addressComponents.province,
+        district_id: null, district_name: addressComponents.district,
+        ward_id: null, ward_name: addressComponents.ward,
+        street: addressComponents.street, project: addressComponents.project,
+        is_converted: false,
+        original_address: '',
+        converted_address: '',
+        conversion_error: err instanceof Error ? err.message : 'Unknown error'
+      };
+    }
+  }
+
+  private async processAddressConversion(propertyId: number, originalAddress: string, propertyService: PropertyService): Promise<void> {
+    const log = (...args: any[]) => { if (this.config.debug) console.log('[AddressConversion]', ...args); };
+    
+    try {
+      log(`Starting address conversion for property ${propertyId}`);
+      
+      const conversionResult = await convertAddressIfNeeded(originalAddress);
+      
+      if (conversionResult.isConverted && conversionResult.convertedAddress) {
+        log(`✓ Address conversion successful: ${conversionResult.originalAddress} → ${conversionResult.convertedAddress}`);
+        
+        // Parse converted address to update components
+        const convertedParts = conversionResult.convertedAddress.split(',').map((part: string) => part.trim());
+        if (convertedParts.length >= 3) {
+          const convertedStreet = convertedParts[0] || '';
+          const convertedWard = convertedParts[1] || '';
+          const convertedProvince = convertedParts[2] || '';
+          
+          // Update property with converted address
+          await propertyService.updateAddressConversionFields(propertyId, {
+            is_converted: true,
+            original_address: conversionResult.originalAddress,
+            converted_address: conversionResult.convertedAddress,
+            conversion_error: null,
+            address_conversion_date: new Date(),
+            province_new: convertedProvince,
+            ward_new: convertedWard,
+            street_new: convertedStreet
+          });
+          
+          log(`✓ Updated property ${propertyId} with converted address`);
+        }
+      } else if (conversionResult.error) {
+        log(`✗ Address conversion failed: ${conversionResult.error}`);
+        
+        // Update property with conversion error info
+        await propertyService.updateAddressConversionFields(propertyId, {
+          is_converted: false,
+          original_address: conversionResult.originalAddress,
+          converted_address: null,
+          conversion_error: conversionResult.error,
+          address_conversion_date: new Date()
+        });
+        
+        log(`✓ Updated property ${propertyId} with conversion error`);
+      }
+    } catch (err) {
+      log(`✗ Error during address conversion: ${err}`);
+      
+      // Update property with conversion error info
+      await propertyService.updateAddressConversionFields(propertyId, {
+        is_converted: false,
+        original_address: originalAddress,
+        converted_address: null,
+        conversion_error: err instanceof Error ? err.message : 'Unknown error',
+        address_conversion_date: new Date()
+      });
+      
+      log(`✓ Updated property ${propertyId} with conversion error`);
+    }
   }
 }

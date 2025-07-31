@@ -111,6 +111,7 @@ CREATE TABLE properties (
     title TEXT NOT NULL,
     description TEXT,
     price DECIMAL(18, 2),
+    price_per_sqm DECIMAL(18, 2),
     area REAL,
     bedrooms SMALLINT,
     bathrooms SMALLINT,
@@ -130,7 +131,12 @@ CREATE TABLE properties (
     district_id INT REFERENCES districts(id),
     province_new TEXT,
     ward_new TEXT,
-    street_new TEXT
+    street_new TEXT,
+    is_address_converted BOOLEAN DEFAULT FALSE,
+    original_address TEXT,
+    converted_address TEXT,
+    conversion_error TEXT,
+    address_conversion_date TIMESTAMPTZ
 );
 
 -- 10. Price History
@@ -195,6 +201,7 @@ CREATE INDEX idx_properties_location ON properties USING GIST (location);
 CREATE INDEX idx_properties_district ON properties (district_id);
 CREATE INDEX idx_properties_property_type ON properties (property_type_id);
 CREATE INDEX idx_properties_price ON properties (price);
+CREATE INDEX idx_properties_price_per_sqm ON properties (price_per_sqm);
 CREATE INDEX idx_properties_area ON properties (area);
 CREATE INDEX idx_price_history_property ON price_history (property_id);
 CREATE INDEX idx_price_history_changed_at ON price_history (changed_at);
