@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h3>Batdongsan Scraper</h3>
+    <div class="form-group">
+      <label for="listingCount">Number of listings:</label>
+      <input type="number" id="listingCount" value="10" min="1" max="100">
+    </div>
+    <div class="form-group">
+      <label for="delay">Delay between pages (ms):</label>
+      <input type="number" id="delay" value="2000" min="1000">
+    </div>
+    <div class="form-group">
+      <label for="saveLocation">Save Location:</label>
+      <div class="save-location-container">
+        <input type="text" id="saveLocation" placeholder="Default Downloads folder" readonly>
+        <button id="chooseSaveLocation">Browse</button>
+      </div>
+    </div>
+    <div class="button-group">
+      <button id="startScraping">Start Scraping</button>
+      <button id="stopScraping" disabled>Stop</button>
+    </div>
+    <div id="status" class="status-box">Ready</div>
+    <div id="progress" class="progress-box"></div>
+    <div id="progressBar" class="progress-bar-container" style="display: none;">
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <span id="progressText">0%</span>
+    </div>
