@@ -42,20 +42,32 @@ button {
 
 .save-location-container {
   display: flex;
-  gap: 5px;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.save-location-container input {
-  flex: 1;
-  background-color: #f9f9f9;
+.save-location-display {
+  padding: 8px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
 }
 
-.save-location-container button {
-  width: auto;
+#browseSaveLocation {
+  width: 100%;
   padding: 8px 12px;
   background-color: #2196F3;
   color: white;
   font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#browseSaveLocation:hover {
+  background-color: #1976D2;
 }
 
 #startScraping {

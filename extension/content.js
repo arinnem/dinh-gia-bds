@@ -1,5 +1,14 @@
 let isScrapingActive = false;
 let scrapedListings = [];
+let scrapingState = {
+  currentStep: 'idle', // 'idle', 'listing_page', 'detail_page', 'returning'
+  listingUrls: [],
+  currentListingIndex: 0,
+  targetCount: 0,
+  delay: 2000,
+  returnUrl: '',
+  tempListingData: null
+};
 let saveLocation = null;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -8,12 +17,24 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     startScraping(request.listingCount, request.delay);
   } else if (request.action === 'stopScraping') {
     isScrapingActive = false;
+    scrapingState.currentStep = 'idle';
+  } else if (request.action === 'setSaveLocation') {
+    saveLocation = request.location;
   }
 });
 
 async function startScraping(targetCount, delay) {
   isScrapingActive = true;
   scrapedListings = [];
+  scrapingState = {
+    currentStep: 'listing_page',
+    listingUrls: [],
+    currentListingIndex: 0,
+    targetCount: targetCount,
+    delay: delay,
+    returnUrl: '',
+    tempListingData: null
+  };
   
   chrome.runtime.sendMessage({
     action: 'updateStatus',
@@ -21,7 +42,17 @@ async function startScraping(targetCount, delay) {
   });
 
   try {
-    await scrapeListings(targetCount, delay);
+    // Check if we're on a detail page and need to return to listing page
+    if (isDetailPage()) {
+      chrome.runtime.sendMessage({
+        action: 'updateStatus',
+        status: 'Returning to listing page...'
+      });
+      history.back();
+      await waitForPageLoad();
+    }
+    
+    await scrapeListingsWithDetailExtraction(targetCount, delay);
   } catch (error) {
     console.error('Scraping error:', error);
     chrome.runtime.sendMessage({
@@ -31,31 +62,28 @@ async function startScraping(targetCount, delay) {
   }
 }
 
-async function scrapeListings(targetCount, delay) {
+async function scrapeListingsWithDetailExtraction(targetCount, delay) {
   let currentPage = 1;
   
-  while (isScrapingActive && scrapedListings.length < targetCount) {
+  // Step 1: Collect listing URLs from search pages
+  while (isScrapingActive && scrapingState.listingUrls.length < targetCount) {
     chrome.runtime.sendMessage({
       action: 'updateStatus',
-      status: `Scraping page ${currentPage}...`
+      status: `Collecting listings from page ${currentPage}...`
     });
 
-    // Extract listings from current page
-    const pageListings = extractListingsFromPage();
+    // Extract listing URLs from current page
+    const pageListingUrls = extractListingUrlsFromPage();
+    scrapingState.listingUrls.push(...pageListingUrls);
     
-    for (const listing of pageListings) {
-      if (scrapedListings.length >= targetCount) break;
-      scrapedListings.push(listing);
-      
-      chrome.runtime.sendMessage({
-        action: 'updateProgress',
-        current: scrapedListings.length,
-        total: targetCount
-      });
-    }
+    chrome.runtime.sendMessage({
+      action: 'updateProgress',
+      current: scrapingState.listingUrls.length,
+      total: targetCount
+    });
 
     // Check if we need to go to next page
-    if (scrapedListings.length < targetCount && isScrapingActive) {
+    if (scrapingState.listingUrls.length < targetCount && isScrapingActive) {
       const nextPageLink = findNextPageLink();
       if (nextPageLink) {
         chrome.runtime.sendMessage({
@@ -64,12 +92,48 @@ async function scrapeListings(targetCount, delay) {
         });
         
         await new Promise(resolve => setTimeout(resolve, delay));
+        scrapingState.returnUrl = window.location.href;
         window.location.href = nextPageLink;
         await waitForPageLoad();
         currentPage++;
       } else {
         break; // No more pages
       }
+    }
+  }
+
+  // Step 2: Visit each listing detail page
+  scrapingState.currentStep = 'detail_page';
+  const urlsToProcess = scrapingState.listingUrls.slice(0, targetCount);
+  
+  for (let i = 0; i < urlsToProcess.length && isScrapingActive; i++) {
+    scrapingState.currentListingIndex = i;
+    const listingUrl = urlsToProcess[i];
+    
+    chrome.runtime.sendMessage({
+      action: 'updateStatus',
+      status: `Extracting details from listing ${i + 1}/${urlsToProcess.length}...`
+    });
+    
+    // Navigate to detail page
+    window.location.href = listingUrl;
+    await waitForPageLoad();
+    
+    // Extract detailed information
+    const detailedListing = extractDetailedListingInfo();
+    if (detailedListing) {
+      scrapedListings.push(detailedListing);
+      
+      chrome.runtime.sendMessage({
+        action: 'updateProgress',
+        current: scrapedListings.length,
+        total: targetCount
+      });
+    }
+    
+    // Wait before next request
+    if (i < urlsToProcess.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 
@@ -82,8 +146,8 @@ async function scrapeListings(targetCount, delay) {
   }
 }
 
-function extractListingsFromPage() {
-  const listings = [];
+function extractListingUrlsFromPage() {
+  const urls = [];
   
   // Multiple selectors to handle different page layouts on batdongsan.com.vn
   const listingSelectors = [
@@ -103,30 +167,145 @@ function extractListingsFromPage() {
   
   listingElements.forEach(element => {
     try {
-      const listing = {
-        name: extractText(element, '.product-title, .re__card-title, h3 a, .product-name, .pr-title a, .product-link'),
-        price: extractText(element, '.product-price, .re__card-config-price, .price, .product-price-value, .pr-price'),
-        address: extractAddress(element),
-        legalStatus: extractText(element, '.legal-status, .product-legal, [data-legal], .re__card-config-legal'),
-        area: extractText(element, '.product-area, .re__card-config-area, .area, .product-area-value, .pr-area'),
-        bedrooms: extractText(element, '.bedroom, .bed-room, [data-bedrooms], .re__card-config-bedroom'),
-        bathrooms: extractText(element, '.bathroom, .bath-room, [data-bathrooms], .re__card-config-bathroom'),
-        url: extractUrl(element),
-        description: extractText(element, '.product-description, .re__card-description, .description'),
-        contactInfo: extractText(element, '.contact-info, .seller-info, .agent-info'),
-        scrapedAt: new Date().toISOString()
-      };
-      
-      // Only add if we have at least name and price
-      if (listing.name && listing.price) {
-        listings.push(listing);
+      const url = extractUrl(element);
+      if (url && !urls.includes(url)) {
+        urls.push(url);
       }
     } catch (error) {
-      console.error('Error extracting listing:', error);
+      console.error('Error extracting listing URL:', error);
     }
   });
   
-  return listings;
+  return urls;
+}
+
+function extractDetailedListingInfo() {
+  try {
+    const listing = {
+      // Basic information
+      name: extractDetailText('.re__pr-title, .product-title, h1, .listing-title, .pr-title'),
+      price: extractPropertyDetail('Mức giá') || extractDetailText('.re__pr-config-price, .price-value, .product-price, .listing-price, .re__pr-short-info-item:contains("tỷ"), .re__pr-short-info-item:contains("triệu")'),
+      
+      // Detailed address information
+      address: extractDetailedAddress(),
+      
+      // Property specifications from detail page
+      area: extractPropertyDetail('Diện tích') || extractDetailText('.re__pr-config-area, .area-value, .product-area'),
+      landDirection: extractPropertyDetail('Hướng nhà') || extractDetailText('.re__pr-config-direction, .direction-value, .huong-nha'),
+      balconyDirection: extractPropertyDetail('Hướng ban công') || extractDetailText('.re__pr-config-balcony-direction, .balcony-direction-value, .huong-ban-cong'),
+      landWidth: extractPropertyDetail('Mặt tiền') || extractDetailText('.re__pr-config-width, .width-value, .mat-tien'),
+      legalStatus: extractPropertyDetail('Pháp lý') || extractDetailText('.re__pr-config-legal, .legal-value, .phap-ly'),
+      furniture: extractPropertyDetail('Nội thất') || extractDetailText('.re__pr-config-furniture, .furniture-value, .noi-that'),
+      
+      // Additional details
+      bedrooms: extractDetailText('.re__pr-config-bedroom, .bedroom-value, .phong-ngu'),
+      bathrooms: extractDetailText('.re__pr-config-bathroom, .bathroom-value, .phong-tam'),
+      floors: extractDetailText('.re__pr-config-floor, .floor-value, .so-tang'),
+      
+      // Description and contact
+      description: extractDetailText('.re__section-body, .product-description, .listing-description'),
+      contactInfo: extractContactInfo(),
+      
+      // Metadata
+      url: window.location.href,
+      scrapedAt: new Date().toISOString(),
+      detailPageExtracted: true
+    };
+    
+    return listing;
+  } catch (error) {
+    console.error('Error extracting detailed listing info:', error);
+    return null;
+  }
+}
+
+function extractDetailedAddress() {
+  // Try to extract structured address from detail page
+  const addressSelectors = [
+    '.re__pr-short-description',
+    '.product-address',
+    '.listing-address',
+    '.address-detail'
+  ];
+  
+  let fullAddress = '';
+  for (const selector of addressSelectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      fullAddress = element.textContent.trim();
+      break;
+    }
+  }
+  
+  // Parse Vietnamese address format
+  const addressParts = fullAddress.split(',').map(part => part.trim());
+  
+  // Try to identify components based on Vietnamese address patterns
+  let street = '', ward = '', district = '', province = '';
+  
+  for (const part of addressParts) {
+    if (part.includes('Đường') || part.includes('Phố') || part.includes('Ngõ')) {
+      street = part;
+    } else if (part.includes('Phường') || part.includes('Xã')) {
+      ward = part;
+    } else if (part.includes('Quận') || part.includes('Huyện') || part.includes('Thành phố')) {
+      district = part;
+    } else if (part.includes('Hồ Chí Minh') || part.includes('Hà Nội') || part.includes('Đà Nẵng') || addressParts.indexOf(part) === addressParts.length - 1) {
+      province = part;
+    }
+  }
+  
+  return {
+    full: fullAddress,
+    street: street,
+    ward: ward,
+    district: district,
+    province: province
+  };
+}
+
+function extractDetailText(selectors) {
+  const selectorArray = selectors.split(', ');
+  for (const selector of selectorArray) {
+    const element = document.querySelector(selector);
+    if (element) {
+      return element.textContent.trim();
+    }
+  }
+  return '';
+}
+
+function extractContactInfo() {
+  const contactSelectors = [
+    '.re__contact-name',
+    '.contact-info',
+    '.seller-info',
+    '.agent-info'
+  ];
+  
+  let contactInfo = {};
+  
+  for (const selector of contactSelectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      contactInfo.name = element.textContent.trim();
+      break;
+    }
+  }
+  
+  const phoneElement = document.querySelector('.re__contact-phone, .contact-phone, .phone-number');
+  if (phoneElement) {
+    contactInfo.phone = phoneElement.textContent.trim();
+  }
+  
+  return contactInfo;
+}
+
+function isDetailPage() {
+  // Check if current page is a property detail page
+  return window.location.href.includes('/ban-') || 
+         window.location.href.includes('/cho-thue-') ||
+         document.querySelector('.re__pr-title, .product-detail, .listing-detail') !== null;
 }
 
 function extractText(element, selectors) {

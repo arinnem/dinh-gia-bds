@@ -17,8 +17,8 @@
     <div class="form-group">
       <label for="saveLocation">Save Location:</label>
       <div class="save-location-container">
-        <input type="text" id="saveLocation" placeholder="Default Downloads folder" readonly>
-        <button id="chooseSaveLocation">Browse</button>
+        <button id="browseSaveLocation">Browse Save Location</button>
+        <div id="saveLocationDisplay" class="save-location-display">Default Downloads folder</div>
       </div>
     </div>
     <div class="button-group">
@@ -27,9 +27,8 @@
     </div>
     <div id="status" class="status-box">Ready</div>
     <div id="progress" class="progress-box"></div>
-    <div id="progressBar" class="progress-bar-container" style="display: none;">
+    <div class="progress-bar-container" style="display: none;">
       <div class="progress-bar">
-        <div id="progressFill" class="progress-fill"></div>
+        <div id="progressBar" class="progress-fill"></div>
       </div>
-      <span id="progressText">0%</span>
     </div>
